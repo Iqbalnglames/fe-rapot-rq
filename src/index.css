@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.form-group input:focus ~ label,
+.form-group input:not(:placeholder-shown) ~ label {
+  @apply -top-3.5 text-sm text-indigo-500;
+}
+
+.form-group .bar:before,
+.form-group .bar:after {
+  @apply content-none absolute bg-indigo-500 transition-all duration-200;
+  height: 2px;
+  width: 0;
+  bottom: 0;
+}
+
+.form-group input:focus ~ .bar:before,
+.form-group input:focus ~ .bar:after,
+.form-group input:not(:placeholder-shown) ~ .bar:before,
+.form-group input:not(:placeholder-shown) ~ .bar:after {
+  @apply w-full;
+}
+
