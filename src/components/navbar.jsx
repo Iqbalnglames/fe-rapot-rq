@@ -30,11 +30,11 @@ const Navbar = () => {
                 >
                   <div className="flex lg:hover:bg-[#f8efe5] hover:rounded p-2 space-x-2 ml-2">
                     <img
-                      src="https://ezio.sakurani.my.id/mas_6agJJ_222142.png"
+                      src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
                       className="block lg:hidden mx-auto w-10 h-10 rounded-full border-2 p-[2px] border-white hover:border-gray-300"
                     />
                     <img
-                      src="https://ezio.sakurani.my.id/mas_6agJJ_222142.png"
+                      src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
                       className="hidden lg:block mx-auto w-8 h-8 rounded-full"
                     />
                     <h1 className="hidden lg:block pt-1">

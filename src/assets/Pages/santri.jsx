@@ -17,6 +17,15 @@ export const Santri = () => {
     });
   };
 
+  const loadingItems = [];
+  for (let i = 0; i < headData.length; i++) {
+    loadingItems.push(
+      <td className="px-6 py-4 font-light whitespace-nowrap">
+        <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
+      </td>
+    );
+  }
+
   const deleteDataSantri = async (slug) => {
     setIsLoading(true);
     try {
@@ -29,62 +38,45 @@ export const Santri = () => {
     } catch (error) {
       console.error(error.message);
     } finally {
-      handleFetchSantriData()
+      handleFetchSantriData();
     }
   };
 
- 
-  
-
   useEffect(() => {
-    handleFetchSantriData()
+    handleFetchSantriData();
   }, []);
 
-
-
-  const santriTableData = ( santri ) => {
-    console.log(santri)
-    return(
-      santri?.map((santri, index) => {
-        return (
-          <tr
-            key={index}
-            className="bg-white hover:bg-[#f8efe5] border-b hover:text-[#9e0000] transition duration-300 ease-in-out"
-          >
-            <td className="px-6 py-1 font-medium whitespace-nowrap">
-              {index + 1}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap">
-              {santri.NIS}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap">
-              {santri.nama}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap">
-              {santri.kelas.kelas}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap">
-              {santri.nama_ortu}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap">
-              {santri.alamat}
-            </td>
-            <td className="px-6 py-1 whitespace-nowrap space-x-1">
-              <button className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5]">
-                <FaPen />
-              </button>
-              <button
-                onClick={() => deleteDataSantri(santri.slug)}
-                className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5]"
-              >
-                <FaTrash />
-              </button>
-            </td>
-          </tr>
-        );
-      })
-    )
-  }
+  const santriTableData = (santri) => {
+    console.log(santri);
+    return santri?.map((santri, index) => {
+      return (
+        <tr
+          key={index}
+          className="bg-white hover:bg-[#f8efe5] border-b hover:text-[#9e0000] transition duration-300 ease-in-out"
+        >
+          <td className="px-6 py-1 font-medium whitespace-nowrap">
+            {index + 1}
+          </td>
+          <td className="px-6 py-1 whitespace-nowrap">{santri.NIS}</td>
+          <td className="px-6 py-1 whitespace-nowrap">{santri.nama}</td>
+          <td className="px-6 py-1 whitespace-nowrap">{santri.kelas.kelas}</td>
+          <td className="px-6 py-1 whitespace-nowrap">{santri.nama_ortu}</td>
+          <td className="px-6 py-1 whitespace-nowrap">{santri.alamat}</td>
+          <td className="px-6 py-1 whitespace-nowrap space-x-1">
+            <button className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5]">
+              <FaPen />
+            </button>
+            <button
+              onClick={() => deleteDataSantri(santri.slug)}
+              className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5]"
+            >
+              <FaTrash />
+            </button>
+          </td>
+        </tr>
+      );
+    });
+  };
 
   return (
     <div>
@@ -121,18 +113,7 @@ hover:bg-[#9e0000]"
                 <tbody>
                   {isLoading ? (
                     <tr className="bg-white hover:bg-[#f8efe5] border-b hover:text-[#9e0000] transition duration-300 ease-in-out">
-                      <td className="px-6 py-4 font-medium whitespace-nowrap">
-                        <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 font-light whitespace-nowrap">
-                        <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 font-light whitespace-nowrap">
-                        <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
-                      </td>
-                      <td className="px-6 py-4 font-light whitespace-nowrap">
-                        <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
-                      </td>
+                      {loadingItems}
                     </tr>
                   ) : (
                     santriTableData(santri)
