@@ -1,57 +1,60 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useNavigate, useParams } from "react-router-dom";
-import { fetchSantriData } from "../../utilities/fetchSantriData";
+import { useParams } from "react-router-dom";
+import { fetchSantriData } from "./../../utilities/fetchSantriData";
 import { AddNilai } from "../../utilities/addNilai";
+import { UpdateNilai } from "../../utilities/updateNilai";
 
 export const AddNilaiSantri = () => {
   const { slug, slugMapel } = useParams();
-  const [mapel, setMapel] = useState([]);
+  const choosedCategory = sessionStorage.getItem("choosedCategory") || "";
+
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [isSubmitted, setisSubmitted] = useState(false);
+  const [santriData, setSantriData] = useState([]);
+  const [detailSantri, setDetailSantri] = useState({});
+  const [tahunAjaranData, setTahunAjaranData] = useState([]);
+  const [nilaiId, setNilaiId] = useState("");
   const [semester, setSemester] = useState(
     sessionStorage.getItem("semester") || ""
   );
-  const [santri, setSantri] = useState([]);
-  const [rapotData, setRapotData] = useState({});
-  const [choosedMapel, setChoosedMapel] = useState("");
-  const [tugas1, setTugas1] = useState("");
-  const [tugas2, setTugas2] = useState("");
-  const [tugas3, setTugas3] = useState("");
-  const [UTS, setUTS] = useState("");
-  const [UAS, setUAS] = useState("");
-  const [isLoading, setisLoading] = useState(true);
-  const [isComplete, setIsComplete] = useState(false);
+  const [tahunAjaran, setTahunAjaran] = useState("");
+  const [mapelData, setMapelData] = useState(!slugMapel ? [] : "");
+  const [mapelId, setMapelId] = useState("");
+  const [kkm, setKkm] = useState("");
+  const [nilai, setNilai] = useState({
+    tugas1: "",
+    tugas2: "",
+    tugas3: "",
+    uts: "",
+    uas: "",
+  });
 
-  const navigate = useNavigate();
-
-  console.log(semester);
-
-  const handleChangeSemester = (e) => {
-    setSemester(e.target.value);
-    sessionStorage.setItem("semester", e.target.value);
-  };
-
-  const handleAddNilai = async (e) => {
-    e.preventDefault();
-
-    setisLoading(true);
-
-    const formData = new FormData();
-
-    formData.append("tugas_1", tugas1);
-    formData.append("tugas_2", tugas2);
-    formData.append("tugas_3", tugas3);
-    formData.append("UTS", UTS);
-    formData.append("UAS", UAS);
-
-    AddNilai(slug, formData).then(() => {
-      setisLoading(false);
-      if (!isComplete) {
-        navigate("/rapot");
-      }
+  // functions
+  const fetchAllSantriData = async () => {
+    await fetchSantriData().then((res) => {
+      setSantriData(res);
     });
   };
 
+  // fetch detail santri data
+  const handleDetailSantri = async () => {
+    await axios.get(`http://127.0.0.1:8000/api/rapot/${slug}`).then((res) => {
+      setDetailSantri(res.data.data);
+    });
+  };
+
+  // fetch tahun ajaran
+  const fetchTahunAjaran = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/api/tahun-ajaran");
+      setTahunAjaranData(res.data.data);
+    } catch (error) {
+      console.error("error fetching data:", error);
+    }
+  };
+
+  // fetch mapel name
   const fetchDetailMapel = async () => {
     try {
       const url = slugMapel
@@ -60,7 +63,7 @@ export const AddNilaiSantri = () => {
       const res = await axios.get(url);
 
       if (res.data && res.data.data) {
-        setMapel(res.data.data);
+        setMapelData(res.data.data);
       } else {
         console.warn("No mapel data found in the response.");
       }
@@ -69,262 +72,272 @@ export const AddNilaiSantri = () => {
     }
   };
 
-  const handleSantriData = async () => {
-    await fetchSantriData().then((res) => {
-      setSantri(res);
+  let filteredMapel = "";
+
+  if (!slugMapel) {
+    if (choosedCategory) {
+      filteredMapel = mapelData
+        .filter((category) => category.id == choosedCategory)
+        .flatMap((category) => category.mapel);
+    } else {
+      filteredMapel = mapelData.flatMap((category) =>
+        category.mapel.flatMap((mapel) => mapel)
+      );
+    }
+  }
+
+  const nilaiLabels = [
+    { label: "Tugas 1", key: "tugas1" },
+    { label: "Tugas 2", key: "tugas2" },
+    { label: "Tugas 3", key: "tugas3" },
+    { label: "UTS", key: "uts" },
+    { label: "UAS", key: "uas" },
+  ];
+
+  // get input nilai value and pass to state
+  const handleInputChange = (e, key) => {
+    setNilai({
+      ...nilai,
+      [key]: e.target.value,
     });
   };
 
-  const fetchRapotData = async () => {
-    await axios
-      .get(`http://127.0.0.1:8000/api/rapot/${slug}`)
-      .then((data) => {
-        setRapotData(data.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  // handle find kkm
+  const handleMapelChange = (e) => {
+    const selectedId = e.target.value;
+    const selectedData = Array.isArray(mapelData)
+      ? filteredMapel.find((data) => data.id === parseInt(selectedId))
+      : mapelData;
+    setKkm(selectedData.KKM);
+    setMapelId(e.target.value);
   };
 
-  let filteredNilai = [];
-  useEffect(() => {
-    fetchDetailMapel();
-    fetchRapotData();
-    handleSantriData();
-    sessionStorage.setItem("semester", semester);
-  }, []);
+  const formData = new FormData();
+  formData.append("kelas_id", detailSantri.kelas?.id);
+  formData.append("semester_id", semester);
+  formData.append("tahun_ajaran_id", tahunAjaran);
+  formData.append("mapel_id", mapelId);
+  formData.append("KKM", kkm);
+  formData.append("tugas_1", nilai.tugas1);
+  formData.append("tugas_2", nilai.tugas2);
+  formData.append("tugas_3", nilai.tugas3);
+  formData.append("UTS", nilai.uts);
+  formData.append("UAS", nilai.uas);
 
-  const NilaiInput = ({ rapotData, slugMapel, choosedMapel, semester }) => {
-    filteredNilai = slugMapel
-      ? rapotData.nilai?.filter(
-          (nilai) =>
-            nilai.mapel.nama_mapel === mapel.nama_mapel &&
-            nilai.semester.nama_semester.replace(/\D/g, "") == semester
-        )
-      : rapotData.nilai?.filter(
-          (nilai) =>
-            nilai.mapel.id == choosedMapel &&
-            nilai.semester.nama_semester.replace(/\D/g, "") == semester
-        );
+  // get old nilai from mapel
+  const handleOldNilai = () => {
+    // validate if nilai found
+    setNilai({
+      tugas1: "",
+      tugas2: "",
+      tugas3: "",
+      uts: "",
+      uas: "",
+    });
 
-    if (!filteredNilai?.length) {
-      return (
-        <>
-          <div className="flex space-x-2">
-            <div className="flex flex-col">
-              <span>tugas 1</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 1"
-                onChange={(e) => setTugas1(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>tugas 2</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 2"
-                onChange={(e) => setTugas2(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>tugas 3</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 3"
-                onChange={(e) => setTugas3(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>UTS</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="UAS"
-                onChange={(e) => setUTS(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>UAS</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="UAS"
-                onChange={(e) => setUAS(e.target.value)}
-              />
-            </div>
-          </div>
-        </>
-      );
-    }
-    return (
-      <div>
-        {filteredNilai.map((nilai) => (
-          <div key={nilai.id} className="flex space-x-2">
-            <div className="flex flex-col">
-              <span>tugas 1</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 1"
-                value={nilai.tugas_1}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>tugas 2</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 2"
-                value={nilai.tugas_2}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>tugas 3</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="tugas 2"
-                value={nilai.tugas_3}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>UTS</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="UAS"
-                value={nilai.UTS}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span>UAS</span>
-              <input
-                className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-                type="text"
-                placeholder="UAS"
-                value={nilai.UAS}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+    const filteredNilaiData = detailSantri.nilai?.filter(
+      (nilai) =>
+        nilai.mapel_id == mapelId &&
+        nilai.tahun_ajaran_id == tahunAjaran &&
+        nilai.semester_id == semester.replace(/\D/g, "")
     );
+    if (filteredNilaiData.length != 0) {
+      setNilai({
+        tugas1: filteredNilaiData[0].tugas_1,
+        tugas2: filteredNilaiData[0].tugas_2,
+        tugas3: filteredNilaiData[0].tugas_3,
+        uts: filteredNilaiData[0].UTS,
+        uas: filteredNilaiData[0].UAS,
+      });
+      setNilaiId(filteredNilaiData[0].id);
+    }
   };
+
+  // simplify all function before passing inside useEffect hook
+  const fetchAllData = async () => {
+    fetchDetailMapel();
+    fetchAllSantriData();
+    fetchTahunAjaran();
+    handleDetailSantri();
+  };
+
+  // useEffect hook
+  useEffect(() => {
+    fetchAllData();
+    handleDetailSantri();
+    if (dataLoaded) {
+      handleOldNilai();
+    }
+  }, [slugMapel, dataLoaded, isSubmitted]);
+
+  // second useEffect hook
+  useEffect(() => {
+    if (slugMapel && mapelData && mapelData.KKM) {
+      setKkm(mapelData.KKM);
+      setMapelId(mapelData.id);
+    }
+    if (tahunAjaran != "" && mapelId != "" && semester != "") {
+      handleOldNilai();
+      if (isSubmitted === true) {
+        handleOldNilai();
+        setisSubmitted(false);
+      }
+    }
+  }, [
+    slugMapel,
+    mapelData,
+    tahunAjaran,
+    isSubmitted,
+    mapelId,
+    nilaiId,
+    semester,
+  ]);
+
+  // add nilai to database
+  const handleAddNilai = (eve) => {
+    eve.preventDefault();
+    AddNilai({ slug, formData });
+    alert("nilai berhasil ditambahkan");
+  };
+
+  const handleUpdateNilai = (eve) => {
+    eve.preventDefault();
+
+    if (formData) {
+      UpdateNilai({ nilaiId, formData });
+    }
+    alert("Nilai berhasil diupdate");
+  };
+
+  // submit data
+  const handleSubmit = (eve) => {
+    eve.preventDefault();
+
+    const filteredNilaiData = detailSantri.nilai?.filter(
+      (nilai) =>
+        nilai.mapel_id == mapelId &&
+        nilai.tahun_ajaran_id == tahunAjaran &&
+        nilai.semester_id == semester.replace(/\D/g, "")
+    );
+
+    if (filteredNilaiData.length != 0) {
+      handleUpdateNilai(eve);
+    } else {
+      handleAddNilai(eve);
+    }
+
+    handleDetailSantri();
+    handleOldNilai();
+    setisSubmitted(true);
+  };
+
+  // debugging zone
+  console.log(nilai);
+  console.log(nilaiId);
+
+  // html component
   return (
-    <>
-      <h1>input Nilai Santri</h1>
-      <div className="mb-2">
-        <h1>Pindah ke data santri sebelumnya / selanjutnya</h1>
-        <button className="p-2 hover:bg-slate-50 rounded border">
-          <IoIosArrowBack />
-        </button>
-        <button className="p-2 rounded border hover:bg-slate-50">
-          <IoIosArrowForward />
-        </button>
-      </div>
-      <form
-        action={!filteredNilai?.length ? handleAddNilai : null}
-        className="flex flex-col border rounded-lg drop-shadow-lg bg-white p-4"
-      >
+    <div className="p-3 border rounded border-gray-300 drop-shadow-md bg-white flex flex-col">
+      <h1 className="text-center font-bold">Tambah Nilai</h1>
+      <form className="flex flex-col w-2/3" onSubmit={handleSubmit}>
         <span>Nama Santri</span>
         <input
-          className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
           type="text"
-          placeholder="Nama Santri"
-          value={rapotData.nama}
+          placeholder="nama santri"
+          className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
+          value={detailSantri.nama}
+          disabled
         />
         <span>Kelas</span>
         <input
-          className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
           type="text"
-          placeholder="Kelas"
-          value={rapotData.kelas?.kelas}
+          placeholder="nama kelas"
+          className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
+          disabled
+          value={detailSantri.kelas?.kelas}
         />
-        <span>Mata Pelajaran</span>
-        {slugMapel ? (
-          <select
-            className="p-2 focus:border-b-2  border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
-            name="mapel"
-            onChange={(e) => setChoosedMapel(e.target.value)}
-            id="mapelSlug"
-            disabled
-          >
-            <option>-- pilih mapel --</option>
-            {slugMapel !== undefined ? (
-              <option selected value={mapel.id}>
-                {mapel.nama_mapel}
-              </option>
-            ) : (
-              mapel.map((category) => {
-                return category.mapel.map((mapelData) => {
-                  return (
-                    <>
-                      <option value={mapelData.id}>
-                        {mapelData.nama_mapel}
-                      </option>
-                    </>
-                  );
-                });
-              })
-            )}
-          </select>
-        ) : (
-          <select
-            className="p-2 focus:border-b-2  border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
-            name="mapel"
-            onChange={(e) => setChoosedMapel(e.target.value)}
-            id="mapelSlug"
-          >
-            <option>-- pilih mapel --</option>
-            {mapel.map((category) => {
-              return category.mapel.map((mapelData) => {
-                return (
-                  <>
-                    <option value={mapelData.id}>{mapelData.nama_mapel}</option>
-                  </>
-                );
-              });
-            })}
-          </select>
-        )}
+        <span>Tahun Ajaran</span>
+        <select
+          onChange={(e) => setTahunAjaran(e.target.value)}
+          name="tahun_ajaran"
+          id=""
+          className="p-2 rounded border border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
+        >
+          <option value="">--pilih tahun ajaran--</option>
+          {tahunAjaranData.flatMap((item) => {
+            return <option value={item.id}>{item.tajar}</option>;
+          })}
+        </select>
         <span>Semester</span>
         <select
-          className="p-2 focus:border-b-2  border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
+          onChange={(e) => setSemester(e.target.value)}
           name="semester"
-          onChange={handleChangeSemester}
+          id=""
+          className="p-2 rounded border border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
         >
-          <option disabled>-- pilih semester --</option>
-          <option value="1">Semester 1</option>
-          <option value="2">Semester 2</option>
+          <option value="">--pilih semester--</option>
+          <option selected={semester == "1"} value="1">
+            Semester 1
+          </option>
+          <option selected={semester == "2"} value="2">
+            Semester 2
+          </option>
         </select>
-        <h1>Nilai Santri</h1>
-        <div className="lg:flex md:grid md:grid-cols-3 space-x-3">
-          <NilaiInput
-            rapotData={rapotData}
-            slugMapel={slugMapel}
-            choosedMapel={choosedMapel}
-            semester={semester}
-          />
+        <span>Mata Pelajaran</span>
+
+        <select
+          className="p-2 rounded border border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
+          onChange={handleMapelChange}
+          name="mapel"
+          disabled={slugMapel ? true : false}
+        >
+          <option value="">pilih mapel</option>
+          {Array.isArray(mapelData) ? (
+            filteredMapel.flatMap((item) => {
+              return (
+                <>
+                  <option value={item.id}>{item.nama_mapel}</option>
+                </>
+              );
+            })
+          ) : (
+            <option selected value={mapelData.id}>
+              {mapelData.nama_mapel}
+            </option>
+          )}
+        </select>
+        <span>KKM</span>
+        <input
+          type="number"
+          placeholder="KKM"
+          className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
+          value={slugMapel ? mapelData.KKM : kkm}
+          disabled
+        />
+        <label htmlFor="Nilai">Nilai</label>
+        <div className="flex space-x-2">
+          {nilaiLabels.map((item, index) => {
+            return (
+              <div className="flex flex-col" key={index}>
+                <span>{item.label}</span>
+                <input
+                  type="number"
+                  placeholder={item.label}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
+                  onChange={(e) => handleInputChange(e, item.key)}
+                  value={dataLoaded ? "Loading..." : nilai[item.key]}
+                />
+              </div>
+            );
+          })}
         </div>
-        <div className="mt-2 space-x-2">
-          <button
-            onClick={() => navigate("/rapot")}
-            className="w-fit rounded h-fit p-2 bg-[#9e0000] text-[#f8efe5]"
-          >
-            Kembali
-          </button>
-          <button
-            className="w-fit p-2 h-fit border-[#9e0000] border rounded text-[#9e0000] hover:bg-[#9e0000] hover:text-[#f8efe5]"
-            type="submit"
-          >
-            Simpan Nilai
-          </button>
-        </div>
+        <button
+          className="text-white p-2 border rounded mt-3 bg-[#9e0000] hover:bg-[#852323]"
+          type="submit"
+        >
+          Simpan Nilai
+        </button>
       </form>
-    </>
+    </div>
   );
 };

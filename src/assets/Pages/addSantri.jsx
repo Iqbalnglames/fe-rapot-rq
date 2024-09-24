@@ -120,7 +120,7 @@ export const AddSantriData = () => {
             )}
             <span>Kelas</span>
             <select
-              className="p-2 focus:border-b-2  border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
+              className="p-2 focus:border-b-2 border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
               name="kelas"
               id=""
               onChange={(e) => setKelasSantri(e.target.value)}

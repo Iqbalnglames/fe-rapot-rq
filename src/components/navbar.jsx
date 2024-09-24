@@ -1,17 +1,45 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
+  const [user, setUser] = useState({});
+
+  const token = sessionStorage.getItem("token");
+  const fetchData = async () => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    await axios.get("http://localhost:8000/api/user").then((res) => {
+      setUser(res.data);
+    });
+  };
+
+  const logoutHandler = async () => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    await axios.post("http://localhost:8000/api/logout").then(() => {
+      sessionStorage.removeItem("token");
+      let path = "http://localhost:5173";
+      location.href = new URL("/", path).href;
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <header className={`w-full h-20 items-center dark:bg-dark `}>
+    <header className={`w-full h-20 items-center dark:bg-dark z-20`}>
       <div className="border border-x-0 border-gray-300 mx-2">
         <div className=" flex justify-end">
           <div className="flex w-full items-center py-5 justify-between px-6">
             <div></div>
             <div className="flex">
-              <Link className="py-2 mt-1 border-r-2 px-4 text-slate-600">
+              <Link                
+                className="py-2 mt-1 border-r-2 px-4 text-slate-600"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -24,8 +52,21 @@ const Navbar = () => {
                 </svg>
               </Link>
               <div className="">
+                {open ? (
+                  <div className="rounded p-2 bg-white drop-shadow-xl w-full top-20 border border-slate-200 flex flex-col absolute">
+                    <Link className="p-2 hover:bg-slate-100">Profil</Link>
+                    <Link
+                      onClick={() => logoutHandler()}
+                      className="p-2 hover:bg-slate-100 hover:text-red-700"
+                    >
+                      Logout
+                    </Link>
+                  </div>
+                ) : (
+                  ""
+                )}
                 <Link
-                  to={"/"}
+                  onClick={() => setOpen(!open)}
                   className="rounded-md bg-primary hover:text-[#9e0000] text-base font-medium hover:bg-primary/90"
                 >
                   <div className="flex lg:hover:bg-[#f8efe5] hover:rounded p-2 space-x-2 ml-2">
@@ -37,9 +78,7 @@ const Navbar = () => {
                       src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
                       className="hidden lg:block mx-auto w-8 h-8 rounded-full"
                     />
-                    <h1 className="hidden lg:block pt-1">
-                      Muhammad Iqbal Tsabitul Azmi
-                    </h1>
+                    <h1 className="hidden lg:block pt-1">{!user.name ? 'Loading....' : user.name}</h1>
                   </div>
                 </Link>
               </div>

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Sidebar = () => {
   return (
-    <div>
+    <div className="z-0">
       <nav className="flex flex-col w-64 h-screen px-4 tex-gray-900 border border-gray-300">
         <div className="flex mt-5 mx-3">
           <img
@@ -75,7 +75,7 @@ export const Sidebar = () => {
                   ></path>
                 </svg>
               </span>
-              <Link to={""}>
+              <Link to={"/asatidzah"}>
                 <span className="ml-2">Asatidzah</span>
               </Link>
             </li>

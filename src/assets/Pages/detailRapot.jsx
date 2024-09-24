@@ -9,11 +9,15 @@ export const DetailRapot = () => {
   const [mapel, setMapel] = useState([]);
   const [nilai, setNilai] = useState([]);
 
-  const { slug, semester } = useParams();
+  const { slug, semester, ujian } = useParams();
 
-  const dateData = new Date()
-  const dateFormatter = new Intl.DateTimeFormat('id', {day:'numeric', month: 'long', year:'numeric'})
-  const currentDate = dateFormatter.format(dateData)
+  const dateData = new Date();
+  const dateFormatter = new Intl.DateTimeFormat("id", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const currentDate = dateFormatter.format(dateData);
 
   const fetchMapel = async () => {
     await axios.get("http://127.0.0.1:8000/api/mapel").then((res) => {
@@ -58,7 +62,6 @@ export const DetailRapot = () => {
     mapelCategories.forEach((category) => {
       categoryMapelMap.get(category.kategori_mapel).forEach((mapelName) => {
         const nilai = mapelDataMap.get(mapelName);
-        console.log(mapelName);
         if (nilai) {
           sortedData.push(nilai);
         }
@@ -66,6 +69,13 @@ export const DetailRapot = () => {
     });
     return sortedData;
   };
+
+  function getGrade(nilai) {
+    if (nilai > 90) return "Sangat Baik";
+    if (nilai > 75) return "Baik";
+    if (nilai > 60) return "Cukup";
+    return "Kurang";
+  }
 
   const sortedDataNilai = sortNilaiMapelByName(nilai, mapel);
 
@@ -85,7 +95,10 @@ export const DetailRapot = () => {
               MADRASAH{" "}
               {kelas?.replace(/\D/g, "") > 9 ? "ALIYAH" : "SALAFIYAH WUSTHA"}
             </h1>
-            <h1>LAPORAN HASIL UJIAN TENGAH SEMESTER</h1>
+            <h1>
+              LAPORAN HASIL UJIAN {ujian === "UTS" ? "TENGAH" : "AKHIR"}{" "}
+              SEMESTER
+            </h1>
             <p className="font-light">
               Alamat : Nengahan, RT 02/ RW 04,Desa Nengahan, Kecamatan Bayat,
               Klaten, Jawa Tengah
@@ -179,12 +192,12 @@ export const DetailRapot = () => {
                 <td className="border border-black"></td>
                 <td className="border border-black"></td>
               </tr>
-              {mapel.map((category, k) => {
+              {mapel.map((category, key) => {
                 return (
                   <>
-                    <tr key={k}>
-                      <td className="border border-black">{k + 1}</td>
-                      <td className="border border-black text-left">
+                    <tr key={key}>
+                      <td className="border border-black">{key + 1}</td>
+                      <td className="border border-black text-left font-bold">
                         {category.kategori_mapel}
                       </td>
                       <td className="border border-black"></td>
@@ -192,44 +205,60 @@ export const DetailRapot = () => {
                       <td className="border border-black"></td>
                       <td className="border border-black"></td>
                     </tr>
-                    {category.mapel.map((i, k) => {
-                      return (
-                        <tr key={k}>
-                          <td></td>
-                          <td className="text-left border-black border">
-                            {(k + 10).toString(36)}. {i.nama_mapel}
-                          </td>
-                          <td className="border-black border">{i.KKM}</td>
-                          {sortedDataNilai
-                            ?.filter(
-                              (res) =>
-                                res.mapel.nama_mapel == i.nama_mapel &&
-                                res.semester.slug == semester
-                            )
-                            .map((res) => {
-                              return (
-                                <>
-                                  <td className="border border-black">
-                                    {res.UAS}
-                                  </td>
-                                  <td className="border border-black">
-                                    {char(res.UAS)}
-                                  </td>
-                                  <td className="border-black border">
-                                    {res.UAS > 90
-                                      ? "Sangat Baik"
-                                      : res.UAS > 75
-                                      ? "Baik"
-                                      : res.UAS > 60
-                                      ? "Cukup"
-                                      : "Kurang"}
-                                  </td>
-                                </>
-                              );
-                            })}
-                        </tr>
-                      );
-                    })}
+                    {category.mapel
+                      .sort((a, b) => {
+                        if (a.nama_mapel < b.nama_mapel) {
+                          return -1;
+                        }
+                        if (a.nama_mapel > b.nama_mapel) {
+                          return 1;
+                        }
+                        return 0;
+                      })
+                      .map((i, k) => {
+                        return (
+                          <tr key={k}>
+                            <td></td>
+                            <td className="text-left border-black border">
+                              {(k + 10).toString(36)}. {i.nama_mapel}
+                            </td>
+                            <td className="border-black border">{i.KKM}</td>
+                            {sortedDataNilai.length !== 0 ? (
+                              sortedDataNilai
+                                ?.filter(
+                                  (res) =>
+                                    res.mapel.nama_mapel === i.nama_mapel &&
+                                    res.semester.slug === semester
+                                )
+                                .map((res) => {
+                                  return (
+                                    <>
+                                      <td className="border border-black">
+                                        {ujian === "UTS" ? res.UTS : res.UAS}
+                                      </td>
+                                      <td className="border border-black">
+                                        {char(res.UAS)}
+                                      </td>
+                                      <td className="border-black border">
+                                        {getGrade(res.UAS)}
+                                      </td>
+                                    </>
+                                  );
+                                })
+                            ) : (
+                              <>
+                                <td className="border border-black">-</td>
+                                <td className="border border-black">
+                                  Belum Ada Nilai
+                                </td>
+                                <td className="border-black border">
+                                  Belum Ada Nilai
+                                </td>
+                              </>
+                            )}
+                          </tr>
+                        );
+                      })}
                   </>
                 );
               })}

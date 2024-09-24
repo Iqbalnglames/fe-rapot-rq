@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { fetchRapot } from "./../../utilities/fetchRapotAll";
 import { FaPen, FaPrint } from "react-icons/fa";
 import { MdFilterAltOff } from "react-icons/md";
-import { BiSolidFilePlus } from "react-icons/bi";
+import { Alert } from "../../components/alert";
+import { LuFileSpreadsheet } from "react-icons/lu";
 
 export const Rapot = () => {
   const [mapel, setMapel] = useState([]);
@@ -20,6 +21,8 @@ export const Rapot = () => {
   );
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isAlerted, setIsAlerted] = useState(false);
+  const [slugNama, setSlugNama] = useState("");
 
   const headData = ["#", "Nama", "Kelas", "Semester", "Penilaian", "Aksi"];
 
@@ -39,6 +42,11 @@ export const Rapot = () => {
       </td>
     );
   }
+
+  const handleShowAlert = (slug) => {
+    setIsAlerted(!isAlerted);
+    setSlugNama(slug);
+  };
 
   const fetchRapotData = async () => {
     await fetchRapot().then((res) => {
@@ -72,7 +80,14 @@ export const Rapot = () => {
     sessionStorage.setItem("semester", event.target.value);
   };
 
+  const escKey = (event) => {
+    if (event.key === "Escape" && isAlerted === true) {
+      setIsAlerted(!isAlerted);
+    }
+  }
+
   useEffect(() => {
+    
     if (savedCategoryId) {
       setChoosedCategory(savedCategoryId);
     }
@@ -83,9 +98,18 @@ export const Rapot = () => {
   useEffect(() => {
     sessionStorage.setItem("choosedCategory", choosedCategory);
   }, [choosedCategory]);
-  console.log(semester);
+
   return (
     <>
+      <Alert
+        icon={<LuFileSpreadsheet />}
+        display={isAlerted ? "absolute" : "hidden"}
+        pesan="Pilih rapot yang akan dicetak"
+        pathA={`/detail-rapot/${slugNama}/semester-${semester}/UTS`}
+        pathB={`/detail-rapot/${slugNama}/semester-${semester}/UAS`}
+        buttonA="Rapot UTS"
+        buttonB="Rapot UAS"
+      />
       <h1 className="text-center font-bold">List Nilai Santri</h1>
       <div className="flex justify-end">
         <div className="flex flex-col">
@@ -216,32 +240,28 @@ export const Rapot = () => {
                       </td>
                       <td className="space-x-1">
                         <Link
-                          to={`/update-rapot/${data.slug}/${mapelPilihan}`}
+                          to={`/add-rapot/${data.slug}/${mapelPilihan
+                            .replace(/\s+/g, "-")
+                            .toLowerCase()}`}
                           className="border hover:bg-[#9e0000] rounded-md hover:text-[#f8efe5] p-2 relative group"
                         >
                           <FaPen className="inline" />
                           <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                            update nilai
+                            tambah/update nilai
                           </div>
                         </Link>
-                        <Link
-                          to={`/add-rapot/${data.slug}/${mapelPilihan}`}
-                          className="border hover:bg-[#9e0000] rounded-md hover:text-[#f8efe5] p-2 relative group"
-                        >
-                          <BiSolidFilePlus className="inline" />
-                          <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                            tambah nilai
-                          </div>
-                        </Link>
-                        <Link
-                          to={`/detail-rapot/${data.slug}/semester-${semester}`}
+                        <button
+                          onClick={() => {
+                            handleShowAlert(data.slug);
+                          }}
+                          onKeyDown={(e) => escKey(e)}
                           className="border hover:bg-[#9e0000] rounded-md hover:text-[#f8efe5] p-2 relative group"
                         >
                           <FaPrint className="inline" />
                           <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                             cetak rapot
                           </div>
-                        </Link>
+                        </button>
                       </td>
                     </tr>
                   </tbody>
