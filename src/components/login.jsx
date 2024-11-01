@@ -13,7 +13,7 @@ export const Login = () => {
   const handleLogin = async (eve) => {
     eve.preventDefault();
 
-    setIsLoading(true)
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("username", userName);
     formData.append("password", password);
@@ -27,12 +27,12 @@ export const Login = () => {
       .then((res) => {
         let path = "http://localhost:5173";
         location.href = new URL("/dashboard", path).href;
-        setIsLoading(false)
-        sessionStorage.setItem("token", res.data.access_token);
+        setIsLoading(false);
+        localStorage.setItem("token", res.data.access_token);
       })
       .catch((error) => {
         setMessage(error.response.data);
-        setIsLoading(false)
+        setIsLoading(false);
       });
   };
 
@@ -61,11 +61,11 @@ export const Login = () => {
             type="text"
             placeholder="username"
           />
-        {message.username && (
-          <div className="p-2 bg-red-300 text-red-700 text-center border border-red-700">
-            <h1>{message.username[0]}</h1>
-          </div>
-        )}
+          {message.username && (
+            <div className="p-2 bg-red-300 text-red-700 text-center border border-red-700">
+              <h1>{message.username[0]}</h1>
+            </div>
+          )}
         </div>
         <div className="flex flex-col mb-2">
           <label htmlFor="password">Password</label>

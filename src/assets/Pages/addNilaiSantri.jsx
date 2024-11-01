@@ -41,6 +41,7 @@ export const AddNilaiSantri = () => {
   const handleDetailSantri = async () => {
     await axios.get(`http://127.0.0.1:8000/api/rapot/${slug}`).then((res) => {
       setDetailSantri(res.data.data);
+      setDataLoaded(true);
     });
   };
 
@@ -59,11 +60,14 @@ export const AddNilaiSantri = () => {
     try {
       const url = slugMapel
         ? `http://127.0.0.1:8000/api/mapel/${slugMapel}`
-        : "http://127.0.0.1:8000/api/mapel";
+        : "http://127.0.0.1:8000/api/kategori-mapel";
       const res = await axios.get(url);
 
       if (res.data && res.data.data) {
         setMapelData(res.data.data);
+        if (slugMapel) {
+          setMapelId(res.data.data.id);
+        }
       } else {
         console.warn("No mapel data found in the response.");
       }
@@ -84,6 +88,9 @@ export const AddNilaiSantri = () => {
         category.mapel.flatMap((mapel) => mapel)
       );
     }
+    filteredMapel = filteredMapel.filter((mapel) =>
+      mapel.kelas.some((kelas) => kelas.id === detailSantri.kelas?.id)
+    );
   }
 
   const nilaiLabels = [
@@ -104,20 +111,23 @@ export const AddNilaiSantri = () => {
 
   // handle find kkm
   const handleMapelChange = (e) => {
-    const selectedId = e.target.value;
-    const selectedData = Array.isArray(mapelData)
-      ? filteredMapel.find((data) => data.id === parseInt(selectedId))
-      : mapelData;
-    setKkm(selectedData.KKM);
+    // simpen dulu barangkali ada client yang kkm nya sesuai mapel
+
     setMapelId(e.target.value);
+    // const selectedId = e.target.value;
+    // // const selectedData = Array.isArray(mapelData)
+    // //   ? filteredMapel.find((data) => data.id === parseInt(selectedId))
+    // //   : mapelData;
+    // // // setKkm(selectedData.KKM);
   };
 
   const formData = new FormData();
   formData.append("kelas_id", detailSantri.kelas?.id);
   formData.append("semester_id", semester);
   formData.append("tahun_ajaran_id", tahunAjaran);
-  formData.append("mapel_id", mapelId);
-  formData.append("KKM", kkm);
+  formData.append("mapel_id", slugMapel ? mapelData.id : mapelId);
+  // formData.append("kkm", kkm);
+  formData.append("kkm", detailSantri.kelas?.kkm);
   formData.append("tugas_1", nilai.tugas1);
   formData.append("tugas_2", nilai.tugas2);
   formData.append("tugas_3", nilai.tugas3);
@@ -137,17 +147,27 @@ export const AddNilaiSantri = () => {
 
     const filteredNilaiData = detailSantri.nilai?.filter(
       (nilai) =>
-        nilai.mapel_id == mapelId &&
+        nilai.mapel_id == (slugMapel ? mapelData.id : mapelId) &&
         nilai.tahun_ajaran_id == tahunAjaran &&
         nilai.semester_id == semester.replace(/\D/g, "")
     );
-    if (filteredNilaiData.length != 0) {
+
+    if (filteredNilaiData.length !== 0) {
       setNilai({
-        tugas1: filteredNilaiData[0].tugas_1,
-        tugas2: filteredNilaiData[0].tugas_2,
-        tugas3: filteredNilaiData[0].tugas_3,
-        uts: filteredNilaiData[0].UTS,
-        uas: filteredNilaiData[0].UAS,
+        tugas1:
+          filteredNilaiData[0].tugas_1 === null
+            ? 0
+            : filteredNilaiData[0].tugas_1,
+        tugas2:
+          filteredNilaiData[0].tugas_2 === null
+            ? 0
+            : filteredNilaiData[0].tugas_2,
+        tugas3:
+          filteredNilaiData[0].tugas_3 === null
+            ? 0
+            : filteredNilaiData[0].tugas_3,
+        uts: filteredNilaiData[0].UTS === null ? 0 : filteredNilaiData[0].UTS,
+        uas: filteredNilaiData[0].UAS === null ? 0 : filteredNilaiData[0].UAS,
       });
       setNilaiId(filteredNilaiData[0].id);
     }
@@ -232,8 +252,6 @@ export const AddNilaiSantri = () => {
   };
 
   // debugging zone
-  console.log(nilai);
-  console.log(nilaiId);
 
   // html component
   return (
@@ -300,9 +318,15 @@ export const AddNilaiSantri = () => {
                 </>
               );
             })
-          ) : (
+          ) : mapelData.kelas?.some(
+              (kelas) => kelas.id === detailSantri.kelas?.id
+            ) ? (
             <option selected value={mapelData.id}>
               {mapelData.nama_mapel}
+            </option>
+          ) : (
+            <option selected>
+              santri ini belum mempelajari mapel yang antum pilih
             </option>
           )}
         </select>
@@ -311,8 +335,8 @@ export const AddNilaiSantri = () => {
           type="number"
           placeholder="KKM"
           className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
-          value={slugMapel ? mapelData.KKM : kkm}
-          disabled
+          value={detailSantri.kelas?.kkm}
+          onChange={(e) => setKkm(e.target.value)}
         />
         <label htmlFor="Nilai">Nilai</label>
         <div className="flex space-x-2">
@@ -325,15 +349,22 @@ export const AddNilaiSantri = () => {
                   placeholder={item.label}
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
                   onChange={(e) => handleInputChange(e, item.key)}
-                  value={dataLoaded ? "Loading..." : nilai[item.key]}
+                  value={nilai[item.key]}
                 />
               </div>
             );
           })}
         </div>
         <button
-          className="text-white p-2 border rounded mt-3 bg-[#9e0000] hover:bg-[#852323]"
+          className="text-white p-2 border rounded mt-3 bg-[#9e0000] hover:bg-[#852323] disabled:bg-[#852323] disabled:text-slate-100"
           type="submit"
+          disabled={
+            mapelData.kelas?.some(
+              (kelas) => kelas.id === detailSantri.kelas?.id
+            )
+              ? false
+              : true
+          }
         >
           Simpan Nilai
         </button>

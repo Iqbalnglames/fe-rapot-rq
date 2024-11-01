@@ -27,7 +27,7 @@ export const Rapot = () => {
   const headData = ["#", "Nama", "Kelas", "Semester", "Penilaian", "Aksi"];
 
   const fetchMapel = async () => {
-    await axios.get("http://127.0.0.1:8000/api/mapel").then((res) => {
+    await axios.get("http://127.0.0.1:8000/api/kategori-mapel").then((res) => {
       setMapel(res.data.data);
     });
   };
@@ -84,10 +84,9 @@ export const Rapot = () => {
     if (event.key === "Escape" && isAlerted === true) {
       setIsAlerted(!isAlerted);
     }
-  }
+  };
 
   useEffect(() => {
-    
     if (savedCategoryId) {
       setChoosedCategory(savedCategoryId);
     }
@@ -113,6 +112,21 @@ export const Rapot = () => {
       <h1 className="text-center font-bold">List Nilai Santri</h1>
       <div className="flex justify-end">
         <div className="flex flex-col">
+          <>
+            <span>Pilih Tahun Ajaran</span>
+            <select
+              name="mapel"
+              // value={semester}
+              // onChange={handleSemesterChange}
+              className="bg-white border p-2 rounded "
+            >
+              <option value="">-- Pilih Tahun Ajaran --</option>
+              <option value="1">2024/2025</option>
+              <option value="2">2025/2026</option>
+            </select>
+          </>
+        </div>
+        <div className="ml-4 flex flex-col">
           <>
             <span>Pilih Semester</span>
             <select

@@ -10,14 +10,19 @@ export const Alert = (props) => {
           <h1 className="text-4xl flex justify-center">{props.icon}</h1>
           <h1>{props.pesan}</h1>
           <div className="space-x-2">
-            <Link
-              to={props.pathA}
-              className="p-2 border border-slate-200 rounded"
-            >
-              {props.buttonA}
-            </Link>
+            {props.pathA ? (
+              <Link
+                to={props.pathA}
+                className="p-2 border border-slate-200 rounded"
+              >
+                {props.buttonA}
+              </Link>
+            ) : null}
             <Link
               to={props.pathB}
+              onClick={
+                typeof props.pathB === "function" ? props.pathB : undefined
+              }
               className="p-2 border border-slate-200 rounded"
             >
               {props.buttonB}

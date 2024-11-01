@@ -20,7 +20,7 @@ export const DetailRapot = () => {
   const currentDate = dateFormatter.format(dateData);
 
   const fetchMapel = async () => {
-    await axios.get("http://127.0.0.1:8000/api/mapel").then((res) => {
+    await axios.get("http://127.0.0.1:8000/api/kategori-mapel").then((res) => {
       setMapel(res.data.data);
     });
   };
@@ -47,7 +47,7 @@ export const DetailRapot = () => {
     const mapelDataMap = new Map();
 
     dataRapot.forEach((data) => {
-      mapelDataMap.set(data.mapel.nama_mapel, data);
+      mapelDataMap.set(data.mapel?.nama_mapel, data);
     });
 
     const categoryMapelMap = new Map();
@@ -79,6 +79,21 @@ export const DetailRapot = () => {
 
   const sortedDataNilai = sortNilaiMapelByName(nilai, mapel);
 
+  // console.log(mapel.map(category => category.mapel.kelas?.some(kelas => kelas.id === rapotData.kelas.id)))
+  console.log(
+    mapel.map((category) =>
+      category.mapel.map((mapel) => {
+        if (
+          mapel.kelas.some((kelas) => kelas.id === rapotData.kelas.id) === true
+        ) {
+          return mapel.nama_mapel;
+        } else {
+          return null;
+        }
+      })
+    )
+  );
+
   return (
     <>
       <div className="w-[21cm] h-[29.7cm] border-2 border-black p-[5mm]">
@@ -96,7 +111,7 @@ export const DetailRapot = () => {
               {kelas?.replace(/\D/g, "") > 9 ? "ALIYAH" : "SALAFIYAH WUSTHA"}
             </h1>
             <h1>
-              LAPORAN HASIL UJIAN {ujian === "UTS" ? "TENGAH" : "AKHIR"}{" "}
+              LAPORAN HASIL PENILAIAN {ujian === "UTS" ? "TENGAH" : "AKHIR"}{" "}
               SEMESTER
             </h1>
             <p className="font-light">
@@ -216,48 +231,60 @@ export const DetailRapot = () => {
                         return 0;
                       })
                       .map((i, k) => {
-                        return (
-                          <tr key={k}>
-                            <td></td>
-                            <td className="text-left border-black border">
-                              {(k + 10).toString(36)}. {i.nama_mapel}
-                            </td>
-                            <td className="border-black border">{i.KKM}</td>
-                            {sortedDataNilai.length !== 0 ? (
-                              sortedDataNilai
-                                ?.filter(
-                                  (res) =>
-                                    res.mapel.nama_mapel === i.nama_mapel &&
-                                    res.semester.slug === semester
-                                )
-                                .map((res) => {
-                                  return (
-                                    <>
-                                      <td className="border border-black">
-                                        {ujian === "UTS" ? res.UTS : res.UAS}
-                                      </td>
-                                      <td className="border border-black">
-                                        {char(res.UAS)}
-                                      </td>
-                                      <td className="border-black border">
-                                        {getGrade(res.UAS)}
-                                      </td>
-                                    </>
-                                  );
-                                })
-                            ) : (
-                              <>
-                                <td className="border border-black">-</td>
-                                <td className="border border-black">
-                                  Belum Ada Nilai
-                                </td>
-                                <td className="border-black border">
-                                  Belum Ada Nilai
-                                </td>
-                              </>
-                            )}
-                          </tr>
-                        );
+                        if (
+                          i.kelas.some(
+                            (kelas) => kelas.id === rapotData.kelas.id
+                          ) === true
+                        ) {
+                          return (
+                            <tr key={k}>
+                              <td></td>
+                              <td className="text-left border-black border">
+                                {(k + 10).toString(36)}. {i.nama_mapel}
+                              </td>
+                              <td className="border-black border">
+                                {rapotData.kelas.kkm}
+                              </td>
+                              {sortedDataNilai.length !== 0 ? (
+                                sortedDataNilai
+                                  ?.filter(
+                                    (res) =>
+                                      res.mapel.nama_mapel === i.nama_mapel &&
+                                      res.semester.slug === semester
+                                  )
+                                  .map((res) => {
+                                    return (
+                                      <>
+                                        <td className="border border-black">
+                                          {ujian === "UTS"
+                                            ? res.UTS
+                                            : res.total}
+                                        </td>
+                                        <td className="border border-black">
+                                          {char(res.total)}
+                                        </td>
+                                        <td className="border-black border">
+                                          {getGrade(res.total)}
+                                        </td>
+                                      </>
+                                    );
+                                  })
+                              ) : (
+                                <>
+                                  <td className="border border-black">-</td>
+                                  <td className="border border-black">
+                                    Belum Ada Nilai
+                                  </td>
+                                  <td className="border-black border">
+                                    Belum Ada Nilai
+                                  </td>
+                                </>
+                              )}
+                            </tr>
+                          );
+                        } else {
+                          ("");
+                        }
                       })}
                   </>
                 );

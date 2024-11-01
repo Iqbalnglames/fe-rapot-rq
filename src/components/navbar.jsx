@@ -7,7 +7,7 @@ const Navbar = () => {
 
   const [user, setUser] = useState({});
 
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const fetchData = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
@@ -20,7 +20,7 @@ const Navbar = () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     await axios.post("http://localhost:8000/api/logout").then(() => {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
       let path = "http://localhost:5173";
       location.href = new URL("/", path).href;
     });
@@ -37,9 +37,7 @@ const Navbar = () => {
           <div className="flex w-full items-center py-5 justify-between px-6">
             <div></div>
             <div className="flex">
-              <Link                
-                className="py-2 mt-1 border-r-2 px-4 text-slate-600"
-              >
+              <Link className="py-2 mt-1 border-r-2 px-4 text-slate-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -53,8 +51,14 @@ const Navbar = () => {
               </Link>
               <div className="">
                 {open ? (
-                  <div className="rounded p-2 bg-white drop-shadow-xl w-full top-20 border border-slate-200 flex flex-col absolute">
-                    <Link className="p-2 hover:bg-slate-100">Profil</Link>
+                  <div className="rounded p-2 bg-white drop-shadow-xl w-[315px] top-20 border border-slate-200 flex flex-col absolute">
+                    <Link
+                      onClick={() => setOpen(!open)}
+                      to={"profile"}
+                      className="p-2 hover:bg-slate-100"
+                    >
+                      Profil
+                    </Link>
                     <Link
                       onClick={() => logoutHandler()}
                       className="p-2 hover:bg-slate-100 hover:text-red-700"
@@ -78,7 +82,9 @@ const Navbar = () => {
                       src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
                       className="hidden lg:block mx-auto w-8 h-8 rounded-full"
                     />
-                    <h1 className="hidden lg:block pt-1">{!user.name ? 'Loading....' : user.name}</h1>
+                    <h1 className="hidden lg:block pt-1">
+                      {!user.name ? "Loading...." : user.name}
+                    </h1>
                   </div>
                 </Link>
               </div>

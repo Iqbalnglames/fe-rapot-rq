@@ -6,7 +6,7 @@ import { AuthPage, AuthProvider } from "./assets/Pages/authPage";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
-const token = sessionStorage.getItem("token")
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (token) {
       setIsLogin(true);
@@ -22,17 +22,16 @@ const token = sessionStorage.getItem("token")
           </AuthProvider>
         </div>
       ) : (
-        ""
-      )}
-      <div className="flex z-0">
-        <Sidebar />
-        <div className="flex z-0 flex-col w-full">
-          <Navbar />
-          <div className="p-8 z-0">
-            <Navigation />
+        <div className="flex z-0">
+          <Sidebar />
+          <div className="flex z-0 flex-col w-full">
+            <Navbar />
+            <div className="p-8 z-0">
+              <Navigation />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
