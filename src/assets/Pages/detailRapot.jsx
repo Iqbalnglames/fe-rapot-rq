@@ -9,7 +9,9 @@ export const DetailRapot = () => {
   const [mapel, setMapel] = useState([]);
   const [nilai, setNilai] = useState([]);
 
-  const { slug, semester, ujian } = useParams();
+  const { slug, semester, ujian, tahunAjaran } = useParams();
+
+  const tajarId = sessionStorage.getItem("tahunAjaran");
 
   const dateData = new Date();
   const dateFormatter = new Intl.DateTimeFormat("id", {
@@ -18,6 +20,22 @@ export const DetailRapot = () => {
     year: "numeric",
   });
   const currentDate = dateFormatter.format(dateData);
+
+  const [user, setUser] = useState({});
+
+  const token = localStorage.getItem("token");
+
+  const fetchData = async () => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    await axios.get("http://localhost:8000/api/user").then((res) => {
+      setUser(res.data);
+    });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchMapel = async () => {
     await axios.get("http://127.0.0.1:8000/api/kategori-mapel").then((res) => {
@@ -46,9 +64,11 @@ export const DetailRapot = () => {
   const sortNilaiMapelByName = (dataRapot, mapelCategories) => {
     const mapelDataMap = new Map();
 
-    dataRapot.forEach((data) => {
-      mapelDataMap.set(data.mapel?.nama_mapel, data);
-    });
+    dataRapot
+      .filter((data) => data.tahun_ajaran_id == tajarId)
+      .forEach((data) => {
+        mapelDataMap.set(data.mapel?.nama_mapel, data);
+      });
 
     const categoryMapelMap = new Map();
     mapelCategories.forEach((category) => {
@@ -84,7 +104,7 @@ export const DetailRapot = () => {
     mapel.map((category) =>
       category.mapel.map((mapel) => {
         if (
-          mapel.kelas.some((kelas) => kelas.id === rapotData.kelas.id) === true
+          mapel.kelas.some((kelas) => kelas.id === rapotData.kelas?.id) === true
         ) {
           return mapel.nama_mapel;
         } else {
@@ -93,6 +113,8 @@ export const DetailRapot = () => {
       })
     )
   );
+
+  console.log(nilai);
 
   return (
     <>
@@ -161,7 +183,10 @@ export const DetailRapot = () => {
                 <td>
                   <h1>Tahun Pelajaran </h1>
                 </td>
-                <td className="font-bold"> : 2023/2024</td>
+                <td className="font-bold">
+                  {" "}
+                  : {tahunAjaran.replace(/-/, "/")}
+                </td>
               </tr>
               <tr>
                 <h1 className="text-transparent">..</h1>
@@ -192,8 +217,10 @@ export const DetailRapot = () => {
               </tr>
               <tr>
                 <th className="border border-black font-normal">Angka</th>
-                <th className="w-96 border border-black font-normal">Huruf</th>
-                <th className="font-normal border border-black">Predikat</th>
+                <th className="w-80 border border-black font-normal">Huruf</th>
+                <th className="font-normal w-20 border border-black">
+                  Predikat
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -233,7 +260,7 @@ export const DetailRapot = () => {
                       .map((i, k) => {
                         if (
                           i.kelas.some(
-                            (kelas) => kelas.id === rapotData.kelas.id
+                            (kelas) => kelas.id === rapotData.kelas?.id
                           ) === true
                         ) {
                           return (
@@ -261,10 +288,18 @@ export const DetailRapot = () => {
                                             : res.total}
                                         </td>
                                         <td className="border border-black">
-                                          {char(res.total)}
+                                          {char(
+                                            ujian === "UTS"
+                                              ? res.UTS
+                                              : res.total
+                                          )}
                                         </td>
                                         <td className="border-black border">
-                                          {getGrade(res.total)}
+                                          {getGrade(
+                                            ujian === "UTS"
+                                              ? res.UTS
+                                              : res.total
+                                          )}
                                         </td>
                                       </>
                                     );
@@ -345,7 +380,13 @@ export const DetailRapot = () => {
                       peserta didik
                     </h1>
                   </div>
-                  <div>ttd di sini</div>
+                  <img
+                src="https://upload.wikimedia.org/wikipedia/id/thumb/b/b7/Tanda_Tangan_Sjachroedin_ZP.png/1200px-Tanda_Tangan_Sjachroedin_ZP.png"
+                alt="tanda tangan"
+                width={200}
+                height={200}
+                className="self-center"
+              />
                   <p>...................</p>
                 </div>
               </td>
@@ -357,8 +398,14 @@ export const DetailRapot = () => {
                       Wali Kelas
                     </h1>
                   </div>
-                  <div>tdd di sini</div>
-                  <p>John Doe</p>
+                  <img
+                src="https://upload.wikimedia.org/wikipedia/id/thumb/b/b7/Tanda_Tangan_Sjachroedin_ZP.png/1200px-Tanda_Tangan_Sjachroedin_ZP.png"
+                alt="tanda tangan"
+                width={200}
+                height={200}
+                className="self-center"
+              />
+                  <p>{user.name}</p>
                 </div>
               </td>
               <td>
@@ -369,7 +416,13 @@ export const DetailRapot = () => {
                       Kepala Madrasah
                     </h1>
                   </div>
-                  <div>ttd di sini</div>
+                  <img
+                src="https://upload.wikimedia.org/wikipedia/id/thumb/b/b7/Tanda_Tangan_Sjachroedin_ZP.png/1200px-Tanda_Tangan_Sjachroedin_ZP.png"
+                alt="tanda tangan"
+                width={200}
+                height={200}
+                className="self-center"
+              />
                   <p>John Doe</p>
                 </div>
               </td>

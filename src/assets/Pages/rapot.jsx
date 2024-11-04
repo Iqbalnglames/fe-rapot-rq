@@ -6,10 +6,12 @@ import { FaPen, FaPrint } from "react-icons/fa";
 import { MdFilterAltOff } from "react-icons/md";
 import { Alert } from "../../components/alert";
 import { LuFileSpreadsheet } from "react-icons/lu";
+import { useTextContent } from "../../utilities/useTextContent";
 
 export const Rapot = () => {
   const [mapel, setMapel] = useState([]);
   const [dataSantri, setDataSantri] = useState([]);
+  const [tajar, setTajar] = useState([]);
   const [semester, setSemester] = useState(
     sessionStorage.getItem("semester") || ""
   );
@@ -19,16 +21,27 @@ export const Rapot = () => {
   const [mapelPilihan, setMapelPilihan] = useState(
     sessionStorage.getItem("choosedMapel") || ""
   );
+  const [tajarPilihan, setTajarPilihan] = useState(
+    "" || sessionStorage.getItem("tahunAjaran")
+  );
 
   const [isLoading, setIsLoading] = useState(true);
   const [isAlerted, setIsAlerted] = useState(false);
   const [slugNama, setSlugNama] = useState("");
+  // const ref = useTextContent(null);
+  const [tajarText, setTajarText] = useState("" || sessionStorage.getItem("tajarText"));
 
-  const headData = ["#", "Nama", "Kelas", "Semester", "Penilaian", "Aksi"];
+  const headData = ["No", "Nama", "Kelas", "Penilaian", "Aksi"];
 
   const fetchMapel = async () => {
     await axios.get("http://127.0.0.1:8000/api/kategori-mapel").then((res) => {
       setMapel(res.data.data);
+    });
+  };
+
+  const fetchTajar = async () => {
+    await axios.get("http://127.0.0.1:8000/api/tahun-ajaran").then((res) => {
+      setTajar(res.data.data);
     });
   };
 
@@ -61,13 +74,25 @@ export const Rapot = () => {
     setMapelPilihan("");
   };
 
+  const handleTajarChange = (event) => {
+    setTajarPilihan(event.target.value);
+    setTajarText(
+      event.target.options[event.target.selectedIndex].text.replace(/\//, "-")
+    );
+    sessionStorage.setItem("tajarText", event.target.options[event.target.selectedIndex].text.replace(/\//, "-"));
+    sessionStorage.setItem("tahunAjaran", event.target.value);
+    setSemester("");
+  };
+
   const resetFilter = () => {
     setChoosedCategory("");
     setMapelPilihan("");
     setSemester("");
+    setTajarPilihan("");
     sessionStorage.setItem("choosedMapel", "");
     sessionStorage.setItem("choosedCategory", "");
     sessionStorage.setItem("semester", "");
+    sessionStorage.setItem("tahunAjaran", "");
   };
 
   const handleMapelChange = (event) => {
@@ -92,11 +117,14 @@ export const Rapot = () => {
     }
     fetchMapel();
     fetchRapotData();
+    fetchTajar();
   }, []);
 
   useEffect(() => {
     sessionStorage.setItem("choosedCategory", choosedCategory);
   }, [choosedCategory]);
+
+  console.log(tajarText);
 
   return (
     <>
@@ -104,8 +132,8 @@ export const Rapot = () => {
         icon={<LuFileSpreadsheet />}
         display={isAlerted ? "absolute" : "hidden"}
         pesan="Pilih rapot yang akan dicetak"
-        pathA={`/detail-rapot/${slugNama}/semester-${semester}/UTS`}
-        pathB={`/detail-rapot/${slugNama}/semester-${semester}/UAS`}
+        pathA={`/detail-rapot/${slugNama}/${tajarText}/semester-${semester}/UTS`}
+        pathB={`/detail-rapot/${slugNama}/${tajarText}/semester-${semester}/UAS`}
         buttonA="Rapot UTS"
         buttonB="Rapot UAS"
       />
@@ -115,32 +143,39 @@ export const Rapot = () => {
           <>
             <span>Pilih Tahun Ajaran</span>
             <select
-              name="mapel"
-              // value={semester}
-              // onChange={handleSemesterChange}
+              name="tajar"
+              value={tajarPilihan}
+              onChange={handleTajarChange}
               className="bg-white border p-2 rounded "
             >
               <option value="">-- Pilih Tahun Ajaran --</option>
-              <option value="1">2024/2025</option>
-              <option value="2">2025/2026</option>
+              {tajar.map((item) => {
+                return (
+                  <>
+                    <option value={item.id}>{item.tajar}</option>
+                  </>
+                );
+              })}
             </select>
           </>
         </div>
-        <div className="ml-4 flex flex-col">
-          <>
-            <span>Pilih Semester</span>
-            <select
-              name="mapel"
-              value={semester}
-              onChange={handleSemesterChange}
-              className="bg-white border p-2 rounded "
-            >
-              <option value="">-- Pilih Semester --</option>
-              <option value="1">Semester 1</option>
-              <option value="2">Semester 2</option>
-            </select>
-          </>
-        </div>
+        {tajarPilihan !== "" ? (
+          <div className="ml-4 flex flex-col">
+            <>
+              <span>Pilih Semester</span>
+              <select
+                name="mapel"
+                value={semester}
+                onChange={handleSemesterChange}
+                className="bg-white border p-2 rounded "
+              >
+                <option value="">-- Pilih Semester --</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+              </select>
+            </>
+          </div>
+        ) : null}
         {semester !== "" ? (
           <div className="ml-4 flex flex-col">
             <span>Kategori Mapel</span>
@@ -214,11 +249,6 @@ export const Rapot = () => {
                       <td className="py-4 px-2"> {index + 1}</td>
                       <td className="text-left"> {data.nama}</td>
                       <td> {data.kelas.kelas}</td>
-                      <td>
-                        {semester !== ""
-                          ? `semester ${semester}`
-                          : "Pilih Semester"}
-                      </td>
                       <td className="items-center w-1/3">
                         <tr className="">
                           <th className="px-4">Mapel</th>
@@ -231,6 +261,8 @@ export const Rapot = () => {
                         {data.nilai
                           ?.filter(
                             (res) =>
+                              (tajarPilihan === "" ||
+                                res.tahun_ajaran_id == tajarPilihan) &&
                               (choosedCategory === "" ||
                                 res.mapel.kategori_mapel_id ==
                                   choosedCategory) &&

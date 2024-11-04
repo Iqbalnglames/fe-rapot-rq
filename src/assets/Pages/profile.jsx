@@ -16,9 +16,9 @@ export const Profile = () => {
     });
   };
 
-  const fetchRoleUser = async () => {
-    await axios.get("http://localhost:8000/api/");
-  };
+  // const fetchRoleUser = async () => {
+  //   await axios.get("http://localhost:8000/api/");
+  // };
 
   useEffect(() => {
     fetchData();
@@ -71,6 +71,24 @@ export const Profile = () => {
             ) : (
               <div>Belum ada role</div>
             )}
+          </div>
+          <div className="mt-2">
+            <h1 className="text-center font-bold text-lg">
+              Tanda Tangan Antum (untuk rapot santri)
+            </h1>
+            <div className="flex flex-col">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/id/thumb/b/b7/Tanda_Tangan_Sjachroedin_ZP.png/1200px-Tanda_Tangan_Sjachroedin_ZP.png"
+                alt="tanda tangan"
+                width={200}
+                height={200}
+                className="self-center"
+              />
+              <form className="">
+                <span>Upload Tanda Tangan di sini</span>
+                <input type="file" name="" id="" />
+              </form>
+            </div>
           </div>
         </div>
       </div>

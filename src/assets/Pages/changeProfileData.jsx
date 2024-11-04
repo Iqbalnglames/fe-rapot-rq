@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchKelas } from "./../../utilities/fetchKelas";
 import axios from "axios";
 import { IoWarning } from "react-icons/io5";
 import { Alert } from "../../components/alert";
@@ -13,7 +12,7 @@ export const ProfileEdit = () => {
     name: "",
     email: "",
     password: "",
-    isActive: "",
+    password_confirm: "",
   });
   const [isSended, setIsSended] = useState(false);
   const [validation, setValidation] = useState([]);
@@ -44,10 +43,10 @@ export const ProfileEdit = () => {
     formData.append("username", data.username);
     formData.append("email", data.email);
     formData.append("password", data.password);
-    formData.append("isActive", data.isActive === true ? 1 : 0);
+    formData.append("password_confirmation", data.password_confirm);
 
     await axios
-      .post("http://127.0.0.1:8000/api/update", formData)
+      .post(`http://127.0.0.1:8000/api/${slug}/update`, formData)
       .then(() => {
         setIsSended(true);
       })
@@ -63,11 +62,11 @@ export const ProfileEdit = () => {
         <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
           <Alert
             icon={<TbChecklist />}
-            pesan={"data berhasil dikirimkan"}
-            pathA={"/asatidzah"}
-            buttonA={"Kembali ke List"}
+            pesan={"data berhasil diupdate"}
+            pathA={"/profile"}
+            buttonA={"Kembali ke Profile"}
             pathB={() => setIsSended(true)}
-            buttonB={"tambah lagi"}
+            buttonB={"Edit Kembali"}
           />
         </div>
       ) : null}
@@ -89,9 +88,7 @@ export const ProfileEdit = () => {
         </>
       ) : null}
       <div>
-        <h1 className="text-center font-bold text-lg">
-          Tambah data ustadz baru
-        </h1>
+        <h1 className="text-center font-bold text-lg">Edit Profil Antum</h1>
         <form onSubmit={handleSendData} method="post">
           <div className="grid grid-cols space-y-2 rounded border border-slate-200 drop-shadow-xl bg-white p-4 mt-4">
             <span>Nama Lengkap Pegawai</span>
@@ -132,7 +129,7 @@ export const ProfileEdit = () => {
                 {validation.email[0]}
               </div>
             )}
-            <span>Password(default: guru123)</span>
+            <span>Password Baru</span>
             <input
               className="p-2 focus:border-b-2 border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
               name="kelas"
@@ -153,11 +150,13 @@ export const ProfileEdit = () => {
               id=""
               type="password"
               placeholder="******"
-              onChange={(e) => setData({ ...data, password: e.target.value })}
+              onChange={(e) =>
+                setData({ ...data, password_confirm: e.target.value })
+              }
             ></input>
-            {validation.password && (
+            {validation.password_confirmation && (
               <div className="my-2 p-2 bg-red-200 border border-red-600 text-red-600">
-                {validation.password[0]}
+                {validation.password_confirmation[0]}
               </div>
             )}
             <div className="flex space-x-2">

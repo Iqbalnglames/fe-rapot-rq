@@ -41,7 +41,7 @@ export const Navigation = () => {
       <Route path="/tambah-role/:slug" element={<AddRole />} />
       <Route path="/tambah-mapel-ajar/:slug" element={<AddMapelAjar />} />
       <Route
-        path="/detail-rapot/:slug/:semester/:ujian"
+        path="/detail-rapot/:slug/:tahunAjaran/:semester/:ujian"
         element={<DetailRapot />}
       />
       <Route path="/add-rapot/:slug/:slugMapel?" element={<AddNilaiSantri />} />

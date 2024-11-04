@@ -30,6 +30,8 @@ export const AddNilaiSantri = () => {
     uas: "",
   });
 
+  console.log(typeof slugMapel)
+
   // functions
   const fetchAllSantriData = async () => {
     await fetchSantriData().then((res) => {
@@ -359,11 +361,19 @@ export const AddNilaiSantri = () => {
           className="text-white p-2 border rounded mt-3 bg-[#9e0000] hover:bg-[#852323] disabled:bg-[#852323] disabled:text-slate-100"
           type="submit"
           disabled={
-            mapelData.kelas?.some(
+            (mapelData.kelas?.some(
               (kelas) => kelas.id === detailSantri.kelas?.id
             )
               ? false
-              : true
+              : true) || typeof slugMapel !== "string"
+              ? mapelData.kelas?.map((mapel) =>
+                  mapel.kelas?.some(
+                    (kelas) => kelas.id === detailSantri.kelas?.id
+                  )
+                    ? false
+                    : true
+                )
+              : null
           }
         >
           Simpan Nilai

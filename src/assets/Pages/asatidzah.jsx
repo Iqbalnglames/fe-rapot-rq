@@ -89,7 +89,7 @@ export const Asatidzah = () => {
                 : ustadz.mapels?.map((item, index) => {
                     return (
                       <div key={index}>
-                        <div className="p-2 w-32 bg-[#9e0000] text-white rounded ">
+                        <div className="p-2 w-32 bg-[#9e0000] overflow-hidden text-white rounded ">
                           {item.nama_mapel}
                         </div>
                       </div>
@@ -211,10 +211,10 @@ hover:bg-[#9e0000]"
               <table className="min-w-full">
                 <thead className="top-0 sticky bg-gray-200 border-b">
                   <tr>
-                    {headData.map((data, i) => {
+                    {headData.map((data, k) => {
                       return (
                         <th
-                          key={i}
+                          key={k}
                           scope="col"
                           className="px-6 py-4 font-medium text-gray-900 text-left"
                         >
