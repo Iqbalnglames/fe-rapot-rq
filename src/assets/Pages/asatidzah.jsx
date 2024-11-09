@@ -7,11 +7,11 @@ import {
   FaUserTag,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { deleteData } from "../../utilities/deleteData";
 import { fetchAsatidzahData } from "../../utilities/fetchAsatidzahData";
 import axios from "axios";
 import { Alert } from "../../components/alert";
 import { TbChecklist } from "react-icons/tb";
+import { deleteData } from "../../utilities/deleteUstadz";
 
 export const Asatidzah = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -89,8 +89,13 @@ export const Asatidzah = () => {
                 : ustadz.mapels?.map((item, index) => {
                     return (
                       <div key={index}>
-                        <div className="p-2 w-32 bg-[#9e0000] overflow-hidden text-white rounded ">
-                          {item.nama_mapel}
+                        <div className="p-2 w-32 bg-[#9e0000] overflow-x-hidden text-white rounded ">
+                          {item.nama_mapel.length > 10
+                            ? item.nama_mapel
+                                .replace("dan", "")
+                                .match(/\b(\w)/g)
+                                .join("")
+                            : item.nama_mapel}
                         </div>
                       </div>
                     );
@@ -105,7 +110,14 @@ export const Asatidzah = () => {
                     return (
                       <div key={index}>
                         <div className="p-2 w-32 bg-[#9e0000] text-white rounded ">
-                          {item.nama_role}
+                          {item.nama_role === "Wali Kelas"
+                            ? `${
+                                item.nama_role
+                              } ${" "} ${ustadz.kelas?.kelas.replace(
+                                /\D/g,
+                                ""
+                              )}`
+                            : item.nama_role}
                         </div>
                       </div>
                     );

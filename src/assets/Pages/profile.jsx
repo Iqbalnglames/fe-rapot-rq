@@ -1,27 +1,42 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import userPic from "../../assets/user.png";
 import { Link } from "react-router-dom";
+import { fetchUser } from "../../utilities/fetchUser";
+import axios from "axios";
 
 export const Profile = () => {
   const [user, setUser] = useState({});
+  const [selectedImage, setSelectedImage] = useState([]);
 
-  const token = localStorage.getItem("token");
-
-  const fetchData = async () => {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-    await axios.get("http://localhost:8000/api/user").then((res) => {
-      setUser(res.data);
-    });
+  const handleImageChange = (event) => {
+    setSelectedImage(event.target.files[0]);
   };
 
-  // const fetchRoleUser = async () => {
-  //   await axios.get("http://localhost:8000/api/");
-  // };
+  const handleSignatureUpload = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("tanda_tangan", selectedImage);
+
+    await axios
+      .post(
+        `http://127.0.0.1:8000/api/${user.slug}/update-signature`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        alert(res.message);
+      });
+  };
 
   useEffect(() => {
-    fetchData();
+    fetchUser().then((res) => {
+      setUser(res.data);
+    });
   }, []);
   return (
     <div className="flex space-x-2">
@@ -56,39 +71,35 @@ export const Profile = () => {
           </Link>
         </div>
         <div className="p-3 w-96 rounded h-[373px] border border-slate-200 drop-shadow-lg bg-white">
-          <h1 className="text-center font-bold text-xl">Role Anda</h1>
-          <div className="grid grid-cols-3 gap-3">
-            {user.roles?.length !== 0 ? (
-              user.roles?.map((role, k) => {
-                return (
-                  <div className="" key={k}>
-                    <div className="p-2 mt-2 rounded bg-[#9e0000] text-white">
-                      {role.nama_role}
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div>Belum ada role</div>
-            )}
-          </div>
           <div className="mt-2">
             <h1 className="text-center font-bold text-lg">
               Tanda Tangan Antum (untuk rapot santri)
             </h1>
-            <div className="flex flex-col">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/id/thumb/b/b7/Tanda_Tangan_Sjachroedin_ZP.png/1200px-Tanda_Tangan_Sjachroedin_ZP.png"
-                alt="tanda tangan"
-                width={200}
-                height={200}
-                className="self-center"
-              />
-              <form className="">
-                <span>Upload Tanda Tangan di sini</span>
-                <input type="file" name="" id="" />
-              </form>
-            </div>
+            {user.roles?.some((role) => role.nama_role === "Wali Kelas") ===
+            true ? (
+              <div className="flex flex-col">
+                <img
+                  src={`http://127.0.0.1:8000/storage/tanda-tangan/${user.tanda_tangan}`}
+                  alt="tanda tangan"
+                  width={200}
+                  height={200}
+                  className="self-center"
+                />
+                <form onSubmit={handleSignatureUpload} method="post">
+                  <span>Upload Tanda Tangan di sini</span>
+                  <input
+                    type="file"
+                    onChange={handleImageChange}
+                    name="signatureUp"
+                  />
+                  <button type="submit">Upload</button>
+                </form>
+              </div>
+            ) : (
+              <h1 className="text-center">
+                Antum tidak perlu mengupload tanda tangan
+              </h1>
+            )}
           </div>
         </div>
       </div>
@@ -107,6 +118,22 @@ export const Profile = () => {
         ) : (
           <div>Belum ada Mata Pelajaran yang antum ampu</div>
         )}
+        <h1 className="font-bold text-xl">Role Antum</h1>
+        <div className="grid grid-cols-3 gap-3">
+          {user.roles?.length !== 0 ? (
+            user.roles?.map((role, k) => {
+              return (
+                <div className="" key={k}>
+                  <div className="p-2 mt-2 rounded bg-[#9e0000] text-white">
+                    {role.nama_role}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div>Belum ada role</div>
+          )}
+        </div>
       </div>
     </div>
   );

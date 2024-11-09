@@ -26,7 +26,7 @@ export const Login = () => {
       })
       .then((res) => {
         let path = "http://localhost:5173";
-        location.href = new URL("/dashboard", path).href;
+        location.href = new URL("/", path).href;
         setIsLoading(false);
         localStorage.setItem("token", res.data.access_token);
       })

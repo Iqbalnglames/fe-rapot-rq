@@ -7,6 +7,7 @@ import { MdFilterAltOff } from "react-icons/md";
 import { Alert } from "../../components/alert";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { useTextContent } from "../../utilities/useTextContent";
+import { fetchUser } from "../../utilities/fetchUser";
 
 export const Rapot = () => {
   const [mapel, setMapel] = useState([]);
@@ -28,8 +29,14 @@ export const Rapot = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAlerted, setIsAlerted] = useState(false);
   const [slugNama, setSlugNama] = useState("");
+  const [user, setUser] = useState({});
+  const [choosedKelas, setChoosedKelas] = useState(
+    localStorage.getItem("classUser") || ""
+  );
   // const ref = useTextContent(null);
-  const [tajarText, setTajarText] = useState("" || sessionStorage.getItem("tajarText"));
+  const [tajarText, setTajarText] = useState(
+    "" || sessionStorage.getItem("tajarText")
+  );
 
   const headData = ["No", "Nama", "Kelas", "Penilaian", "Aksi"];
 
@@ -61,8 +68,9 @@ export const Rapot = () => {
     setSlugNama(slug);
   };
 
-  const fetchRapotData = async () => {
-    await fetchRapot().then((res) => {
+  const fetchRapotData = (kelas) => {
+    setIsLoading(true);
+    fetchRapot(kelas).then((res) => {
       setDataSantri(res);
       setIsLoading(false);
     });
@@ -79,7 +87,10 @@ export const Rapot = () => {
     setTajarText(
       event.target.options[event.target.selectedIndex].text.replace(/\//, "-")
     );
-    sessionStorage.setItem("tajarText", event.target.options[event.target.selectedIndex].text.replace(/\//, "-"));
+    sessionStorage.setItem(
+      "tajarText",
+      event.target.options[event.target.selectedIndex].text.replace(/\//, "-")
+    );
     sessionStorage.setItem("tahunAjaran", event.target.value);
     setSemester("");
   };
@@ -111,20 +122,36 @@ export const Rapot = () => {
     }
   };
 
+  const kelasArray = [];
+
+  user.roles?.some((role) => role.nama_role === "Wali Kelas") === true
+    ? kelasArray.push(user.kelas)
+    : null;
+
+  user.mapels?.map((mapel) =>
+    mapel.kelas.map((kelas) => kelasArray.push(kelas))
+  );
+
+  const mergeredKelas = kelasArray.filter(
+    (value, index, self) => index === self.findIndex((t) => t.id === value.id)
+  );
+
   useEffect(() => {
+    fetchUser().then((res) => {
+      setUser(res.data);
+    });
+    fetchRapotData(choosedKelas);
+
     if (savedCategoryId) {
       setChoosedCategory(savedCategoryId);
     }
     fetchMapel();
-    fetchRapotData();
     fetchTajar();
-  }, []);
+  }, [choosedKelas]);
 
   useEffect(() => {
     sessionStorage.setItem("choosedCategory", choosedCategory);
   }, [choosedCategory]);
-
-  console.log(tajarText);
 
   return (
     <>
@@ -140,6 +167,27 @@ export const Rapot = () => {
       <h1 className="text-center font-bold">List Nilai Santri</h1>
       <div className="flex justify-end">
         <div className="flex flex-col">
+          <>
+            <span>Pilih Kelas</span>
+            <select
+              name="tajar"
+              value={choosedKelas}
+              onChange={(e) => setChoosedKelas(e.target.value)}
+              className="bg-white border p-2 rounded "
+            >
+              <option value="">-- Pilih Kelas --</option>
+              {mergeredKelas.map((item) => {
+                return (
+                  <>
+                    <option value={item.id}>{item.kelas}</option>
+                  </>
+                );
+              })}
+            </select>
+          </>
+        </div>
+
+        <div className="ml-4 flex flex-col">
           <>
             <span>Pilih Tahun Ajaran</span>
             <select
@@ -209,16 +257,32 @@ export const Rapot = () => {
                 className="bg-white border p-2 rounded "
               >
                 <option value="">-- Semua Mapel --</option>
-                {mapel
-                  ?.filter((category) => category.id == choosedCategory)
-                  .flatMap((category) => category.mapel)
-                  .map((mapel) => {
-                    return (
-                      <option key={mapel.id} value={mapel.nama_mapel}>
-                        {mapel.nama_mapel}
-                      </option>
-                    );
-                  })}
+                {user.roles?.some(
+                  (role) =>
+                    role.nama_role === "Admin" ||
+                    role.nama_role === "Wali Kelas"
+                ) === false
+                  ? user.mapels
+                      .filter(
+                        (mapel) => mapel.kategori_mapel_id == choosedCategory
+                      )
+                      .flatMap((mapel) => {
+                        return (
+                          <option key={mapel.id} value={mapel.nama_mapel}>
+                            {mapel.nama_mapel}
+                          </option>
+                        );
+                      })
+                  : mapel
+                      ?.filter((category) => category.id == choosedCategory)
+                      .flatMap((category) => category.mapel)
+                      .map((mapel) => {
+                        return (
+                          <option key={mapel.id} value={mapel.nama_mapel}>
+                            {mapel.nama_mapel}
+                          </option>
+                        );
+                      })}
               </select>
             </>
           </div>
@@ -259,17 +323,29 @@ export const Rapot = () => {
                           <th className="px-4">UAS</th>
                         </tr>
                         {data.nilai
-                          ?.filter(
-                            (res) =>
-                              (tajarPilihan === "" ||
-                                res.tahun_ajaran_id == tajarPilihan) &&
-                              (choosedCategory === "" ||
-                                res.mapel.kategori_mapel_id ==
-                                  choosedCategory) &&
-                              (mapelPilihan === "" ||
-                                res.mapel.nama_mapel === mapelPilihan) &&
-                              res.semester.nama_semester.replace(/\D/g, "") ==
-                                semester
+                          ?.filter((res) =>
+                            user.roles?.some(
+                              (role) =>
+                                role.nama_role === "Admin" ||
+                                role.nama_role === "Wali Kelas"
+                            ) === false
+                              ? (tajarPilihan === "" ||
+                                  res.tahun_ajaran_id == tajarPilihan) &&
+                                (choosedCategory === "" ||
+                                  res.mapel.kategori_mapel_id ==
+                                    choosedCategory) &&
+                                res.mapel.nama_mapel === mapelPilihan &&
+                                res.semester.nama_semester.replace(/\D/g, "") ==
+                                  semester
+                              : (tajarPilihan === "" ||
+                                  res.tahun_ajaran_id == tajarPilihan) &&
+                                (choosedCategory === "" ||
+                                  res.mapel.kategori_mapel_id ==
+                                    choosedCategory) &&
+                                (mapelPilihan == "" ||
+                                  res.mapel.nama_mapel === mapelPilihan) &&
+                                res.semester.nama_semester.replace(/\D/g, "") ==
+                                  semester
                           )
                           .map((res, i) => {
                             return (
@@ -296,18 +372,24 @@ export const Rapot = () => {
                             tambah/update nilai
                           </div>
                         </Link>
-                        <button
-                          onClick={() => {
-                            handleShowAlert(data.slug);
-                          }}
-                          onKeyDown={(e) => escKey(e)}
-                          className="border hover:bg-[#9e0000] rounded-md hover:text-[#f8efe5] p-2 relative group"
-                        >
-                          <FaPrint className="inline" />
-                          <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                            cetak rapot
-                          </div>
-                        </button>
+                        {user.roles?.some(
+                          (role) =>
+                            role.nama_role === "admin" ||
+                            role.nama_role === "Wali Kelas"
+                        ) === true ? (
+                          <button
+                            onClick={() => {
+                              handleShowAlert(data.slug);
+                            }}
+                            onKeyDown={(e) => escKey(e)}
+                            className="border hover:bg-[#9e0000] rounded-md hover:text-[#f8efe5] p-2 relative group"
+                          >
+                            <FaPrint className="inline" />
+                            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                              cetak rapot
+                            </div>
+                          </button>
+                        ) : null}
                       </td>
                     </tr>
                   </tbody>

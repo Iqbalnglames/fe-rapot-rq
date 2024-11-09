@@ -3,11 +3,19 @@ import { Sidebar } from "./components/sidebar";
 import { Navigation } from "./utilities/router";
 import { useEffect, useState } from "react";
 import { AuthPage, AuthProvider } from "./assets/Pages/authPage";
+import { fetchUser } from "./utilities/fetchUser";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
+
   const token = localStorage.getItem("token");
+  const fetchUserData = async () => {
+    fetchUser().then((res) => {
+      localStorage.setItem("classUser", res.data.kelas?.id);
+    });
+  };
   useEffect(() => {
+    fetchUserData();
     if (token) {
       setIsLogin(true);
     }

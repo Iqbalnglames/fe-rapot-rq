@@ -20,6 +20,15 @@ export const AddRoleData = () => {
     });
   };
 
+  function titleCase(str) {
+    let splitStr = str.toLowerCase().split(" ");
+    for (let i = 0; i < splitStr.length; i++) {
+      splitStr[i] =
+        splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    }
+    return splitStr.join(" ");
+  }
+
   useEffect(() => {
     handleFetchRole();
   }, [isSended]);
@@ -28,7 +37,7 @@ export const AddRoleData = () => {
     eve.preventDefault();
     const formData = new FormData();
 
-    formData.append("nama_role", data.nama_role);
+    formData.append("nama_role", titleCase(data.nama_role));
 
     await axios
       .post("http://127.0.0.1:8000/api/role", formData)

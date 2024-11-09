@@ -30,7 +30,7 @@ export const AddNilaiSantri = () => {
     uas: "",
   });
 
-  console.log(typeof slugMapel)
+  console.log(typeof slugMapel);
 
   // functions
   const fetchAllSantriData = async () => {
@@ -311,7 +311,7 @@ export const AddNilaiSantri = () => {
           name="mapel"
           disabled={slugMapel ? true : false}
         >
-          <option value="">pilih mapel</option>
+          <option value="">--pilih mapel--</option>
           {Array.isArray(mapelData) ? (
             filteredMapel.flatMap((item) => {
               return (
@@ -361,18 +361,12 @@ export const AddNilaiSantri = () => {
           className="text-white p-2 border rounded mt-3 bg-[#9e0000] hover:bg-[#852323] disabled:bg-[#852323] disabled:text-slate-100"
           type="submit"
           disabled={
-            (mapelData.kelas?.some(
-              (kelas) => kelas.id === detailSantri.kelas?.id
-            )
-              ? false
-              : true) || typeof slugMapel !== "string"
-              ? mapelData.kelas?.map((mapel) =>
-                  mapel.kelas?.some(
-                    (kelas) => kelas.id === detailSantri.kelas?.id
-                  )
-                    ? false
-                    : true
+            slugMapel
+              ? mapelData.kelas?.some(
+                  (kelas) => kelas.id === detailSantri.kelas?.id
                 )
+                ? false
+                : true
               : null
           }
         >

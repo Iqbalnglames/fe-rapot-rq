@@ -24,7 +24,7 @@ export const Navigation = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="profile/ubah-profile/:slug" element={<ProfileEdit />} />
       <Route path="/" element={<Dashboard />} />
-      <Route path="/rapot" element={<Rapot />} />
+      <Route path="/penilaian" element={<Rapot />} />
       <Route path="/pendataan" element={<Pendataan />} />
       <Route path="/pendataan/tambah-data-mapel" element={<AddMapelData />} />
       <Route path="/pendataan/tambah-data-role" element={<AddRoleData />} />

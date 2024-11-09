@@ -4,6 +4,7 @@ import axios from "axios";
 import { IoWarning } from "react-icons/io5";
 import { Alert } from "../../components/alert";
 import { TbChecklist } from "react-icons/tb";
+import { fetchKelas } from "../../utilities/fetchKelas";
 
 export const AddRole = () => {
   const [roleId, setRoleId] = useState([]);
@@ -12,6 +13,8 @@ export const AddRole = () => {
   const [isSended, setIsSended] = useState(false);
   const [validation, setValidation] = useState([]);
   const [errors, setErrors] = useState(false);
+  const [kelas, setKelas] = useState([]);
+  const [selectedKelas, setSelectedKelas] = useState("");
 
   const { slug } = useParams();
 
@@ -38,6 +41,9 @@ export const AddRole = () => {
   useEffect(() => {
     fetchUserData();
     fetchRole();
+    fetchKelas().then((data) => {
+      setKelas(data);
+    });
   }, []);
 
   const removedDuplicateRole = roleId.filter(
@@ -52,6 +58,13 @@ export const AddRole = () => {
     const formData = new FormData();
 
     formData.append("role_id", JSON.stringify(finalResultRoleId));
+    formData.append(
+      "kelas_id",
+      removedDuplicateRole.some((role) => role.nama_role === "Wali Kelas") ===
+        true
+        ? selectedKelas
+        : ""
+    );
 
     await axios
       .post(`http://127.0.0.1:8000/api/${slug}/update-role`, formData)
@@ -160,6 +173,30 @@ export const AddRole = () => {
                 {validation.role_id[0]}
               </div>
             )}
+            <div>
+              {removedDuplicateRole.some(
+                (role) => role.nama_role === "Wali Kelas"
+              ) === true ? (
+                <>
+                  <span>Kelas</span>
+                  <select
+                    className="p-2 focus:border-b-2 border-b w-full border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
+                    name="kelas"
+                    id=""
+                    onChange={(e) => setSelectedKelas(e.target.value)}
+                  >
+                    <option>-- pilih kelas --</option>
+                    {kelas.map((kelas) => {
+                      return (
+                        <>
+                          <option value={kelas.id}>{kelas.kelas}</option>
+                        </>
+                      );
+                    })}
+                  </select>
+                </>
+              ) : null}
+            </div>
             <div className="flex space-x-2">
               <Link
                 to={"/asatidzah"}

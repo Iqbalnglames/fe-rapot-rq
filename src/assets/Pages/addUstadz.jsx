@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchKelas } from "./../../utilities/fetchKelas";
 import axios from "axios";
 import { IoWarning } from "react-icons/io5";
 import { Alert } from "../../components/alert";
