@@ -2,15 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { char } from "../../utilities/intToChar";
 import { useParams } from "react-router-dom";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-} from "@react-pdf/renderer";
-import { createTw } from "react-pdf-tailwind";
+
 
 export const DetailRapot = () => {
   const [rapotData, setRapotData] = useState({});
@@ -117,8 +109,6 @@ export const DetailRapot = () => {
   }
 
   const sortedDataNilai = sortNilaiMapelByName(nilai, mapel);
-
-  const tw = createTw({});
 
   const printRef = useRef();
 

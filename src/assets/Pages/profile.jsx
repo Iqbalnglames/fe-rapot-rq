@@ -75,7 +75,7 @@ export const Profile = () => {
             <h1 className="text-center font-bold text-lg">
               Tanda Tangan Antum (untuk rapot santri)
             </h1>
-            {user.roles?.some((role) => role.nama_role === "Wali Kelas") ===
+            {user.roles?.some((role) => role.nama_role === "Wali Kelas" || role.nama_role === "Kepala Sekolah") ===
             true ? (
               <div className="flex flex-col">
                 <img
