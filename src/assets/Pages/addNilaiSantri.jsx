@@ -45,7 +45,7 @@ export const AddNilaiSantri = () => {
 
   // fetch detail santri data
   const handleDetailSantri = async () => {
-    await axios.get(`http://api.rapot.techbatchtech.my.id/api/rapot/${slug}`).then((res) => {
+    await axios.get(`https://api.rapot.techbatchtech.my.id/api/rapot/${slug}`).then((res) => {
       setDetailSantri(res.data.data);
       setDataLoaded(true);
     });
@@ -54,7 +54,7 @@ export const AddNilaiSantri = () => {
   // fetch tahun ajaran
   const fetchTahunAjaran = async () => {
     try {
-      const res = await axios.get("http://api.rapot.techbatchtech.my.id/api/tahun-ajaran");
+      const res = await axios.get("https://api.rapot.techbatchtech.my.id/api/tahun-ajaran");
       setTahunAjaranData(res.data.data);
     } catch (error) {
       console.error("error fetching data:", error);
@@ -65,8 +65,8 @@ export const AddNilaiSantri = () => {
   const fetchDetailMapel = async () => {
     try {
       const url = slugMapel
-        ? `http://api.rapot.techbatchtech.my.id/api/mapel/${slugMapel}`
-        : "http://api.rapot.techbatchtech.my.id/api/kategori-mapel";
+        ? `https://api.rapot.techbatchtech.my.id/api/mapel/${slugMapel}`
+        : "https://api.rapot.techbatchtech.my.id/api/kategori-mapel";
       const res = await axios.get(url);
 
       if (res.data && res.data.data) {

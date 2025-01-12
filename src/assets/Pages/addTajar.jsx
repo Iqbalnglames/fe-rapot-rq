@@ -18,7 +18,7 @@ export const AddTajarData = () => {
     formData.append("tajar", data.tajar);
 
     await axios
-      .post("http://api.rapot.techbatchtech.my.id/api/tahun-ajaran", formData)
+      .post("https://api.rapot.techbatchtech.my.id/api/tahun-ajaran", formData)
       .then(() => {
         setIsSended(true);
       })

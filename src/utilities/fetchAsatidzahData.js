@@ -1,7 +1,7 @@
 import axios from "axios";
 export const fetchAsatidzahData = async () => {
   try{
-    const res = await axios.get("http://api.rapot.techbatchtech.my.id/api/asatidzah");
+    const res = await axios.get("https://api.rapot.techbatchtech.my.id/api/asatidzah");
     return res.data.data
   }catch(error){
     console.error("error mengambil data", error)

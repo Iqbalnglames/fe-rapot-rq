@@ -15,7 +15,7 @@ export const AddRoleData = () => {
   const headData = ["No", "Nama Role"];
 
   const handleFetchRole = async () => {
-    await axios.get("http://api.rapot.techbatchtech.my.id/api/role").then((res) => {
+    await axios.get("https://api.rapot.techbatchtech.my.id/api/role").then((res) => {
       setRole(res.data.data);
     });
   };

@@ -17,7 +17,7 @@ export const AddMapelAjar = () => {
 
   const fetchUserData = async () => {
     await axios
-      .get(`http://api.rapot.techbatchtech.my.id/api/${slug}/mapel-ajar`)
+      .get(`https://api.rapot.techbatchtech.my.id/api/${slug}/mapel-ajar`)
       .then((res) => {
         setUserData(res.data.data);
         setMapelId(res.data.data.mapels);
@@ -26,7 +26,7 @@ export const AddMapelAjar = () => {
 
   const fetchMapel = async () => {
     await axios
-      .get("http://api.rapot.techbatchtech.my.id/api/mapel")
+      .get("https://api.rapot.techbatchtech.my.id/api/mapel")
       .then((res) => {
         setMapel(res.data.data);
       })
@@ -56,7 +56,7 @@ export const AddMapelAjar = () => {
     formData.append("mapel_id", JSON.stringify(finalResultMapelId));
 
     await axios
-      .post(`http://api.rapot.techbatchtech.my.id/api/${slug}/update-mapel-ajar`, formData)
+      .post(`https://api.rapot.techbatchtech.my.id/api/${slug}/update-mapel-ajar`, formData)
       .then(() => {
         setIsSended(true);
       })

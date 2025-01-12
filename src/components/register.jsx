@@ -25,7 +25,7 @@ export const Register = () => {
     formData.append("password", data.password);
 
     await axios
-      .post("http://api.rapot.techbatchtech.my.id/api/register", formData)
+      .post("https://api.rapot.techbatchtech.my.id/api/register", formData)
       .then(() => {
         setIsLoading(false);
         alert("berhasil mendaftar");

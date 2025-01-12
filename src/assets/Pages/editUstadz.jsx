@@ -20,7 +20,7 @@ export const EditUstadz = () => {
 
   const handleFetchData = async () => {
     await axios
-      .get(`http://api.rapot.techbatchtech.my.id/api/user/${slug}/edit`)
+      .get(`https://api.rapot.techbatchtech.my.id/api/user/${slug}/edit`)
       .then((res) => {
         setData({
           username: res.data.data.username,
@@ -46,7 +46,7 @@ export const EditUstadz = () => {
     formData.append("isActive", data.isActive === true ? 1 : 0);
 
     await axios
-      .post("http://api.rapot.techbatchtech.my.id/api/register", formData)
+      .post("https://api.rapot.techbatchtech.my.id/api/register", formData)
       .then(() => {
         setIsSended(true);
       })

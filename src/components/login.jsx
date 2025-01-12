@@ -19,13 +19,13 @@ export const Login = () => {
     formData.append("password", password);
 
     await axios
-      .post("http://api.rapot.techbatchtech.my.id/api/login", formData, {
+      .post("https://api.rapot.techbatchtech.my.id/api/login", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
-        let path = "http://localhost:5173";
+        let path = "https://rapot.techbatchtech.my.id";
         location.href = new URL("/", path).href;
         setIsLoading(false);
         localStorage.setItem("token", res.data.access_token);

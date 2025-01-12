@@ -1,5 +1,5 @@
 import axios from "axios"
 
 export const AddNilai = ({slug, formData}) => {
-    axios.post(`http://api.rapot.techbatchtech.my.id/api/rapot/add/${slug}`, formData)
+    axios.post(`https://api.rapot.techbatchtech.my.id/api/rapot/add/${slug}`, formData)
 }

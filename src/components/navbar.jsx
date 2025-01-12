@@ -12,7 +12,7 @@ const Navbar = (props) => {
   const fetchData = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    await axios.get("http://localhost:8000/api/user").then((res) => {
+    await axios.get("https://api.rapot.techbatchtech.my.id/api/user").then((res) => {
       setUser(res.data);
     });
   };
@@ -20,9 +20,9 @@ const Navbar = (props) => {
   const logoutHandler = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    await axios.post("http://localhost:8000/api/logout").then(() => {
+    await axios.post("https://api.rapot.techbatchtech.my.id/api/logout").then(() => {
       localStorage.removeItem("token");
-      let path = "http://localhost:5173";
+      let path = "https://rapot.techbatchtech.my.id";
       location.href = new URL("/", path).href;
     });
   };
