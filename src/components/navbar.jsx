@@ -12,19 +12,28 @@ const Navbar = (props) => {
   const fetchData = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/user").then((res) => {
-      setUser(res.data);
-    });
+    await axios
+      .get("https://rapot.api.techbatchtech.my.id/api/user", {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((res) => {
+        setUser(res.data);
+      });
   };
 
   const logoutHandler = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    await axios.post("https://api.rapot.techbatchtech.my.id/api/logout").then(() => {
-      localStorage.removeItem("token");
-      let path = "https://rapot.techbatchtech.my.id";
-      location.href = new URL("/", path).href;
-    });
+    await axios
+      .post("https://rapot.api.techbatchtech.my.id/api/logout")
+      .then(() => {
+        localStorage.removeItem("token");
+        let path = "https://rapot.techbatchtech.my.id";
+        location.href = new URL("/", path).href;
+      });
   };
 
   useEffect(() => {

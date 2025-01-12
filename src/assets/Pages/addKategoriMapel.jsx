@@ -18,7 +18,7 @@ export const AddKategoriMapel = () => {
     formData.append("kategori_mapel", data.kategori_mapel);
 
     await axios
-      .post("https:////api.rapot.techbatchtech.my.id/api/kategori-mapel", formData)
+      .post("https://api.rapot.techbatchtech.my.id/api/kategori-mapel", formData)
       .then(() => {
         setIsSended(true);
       })
