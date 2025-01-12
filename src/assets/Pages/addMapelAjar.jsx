@@ -56,7 +56,7 @@ export const AddMapelAjar = () => {
     formData.append("mapel_id", JSON.stringify(finalResultMapelId));
 
     await axios
-      .post(`https://api.rapot.techbatchtech.my.id/api/${slug}/update-mapel-ajar`, formData)
+      .post(`https://rapot.api.techbatchtech.my.id/api/${slug}/update-mapel-ajar`, formData)
       .then(() => {
         setIsSended(true);
       })

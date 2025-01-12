@@ -19,7 +19,7 @@ export const Login = () => {
     formData.append("password", password);
 
     await axios
-      .post("https://api.rapot.techbatchtech.my.id/api/login", formData, {
+      .post("https://rapot.api.techbatchtech.my.id/api/login", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -19,7 +19,7 @@ export const AddRole = () => {
   const { slug } = useParams();
 
   const fetchUserData = async () => {
-    await axios.get(`https://api.rapot.techbatchtech.my.id/api/${slug}/role`).then((res) => {
+    await axios.get(`https://rapot.api.techbatchtech.my.id/api/${slug}/role`).then((res) => {
       setUserData(res.data.data);
       setRoleId(res.data.data.roles);
     });
@@ -27,7 +27,7 @@ export const AddRole = () => {
 
   const fetchRole = async () => {
     await axios
-      .get("https://api.rapot.techbatchtech.my.id/api/role")
+      .get("https://rapot.api.techbatchtech.my.id/api/role")
       .then((res) => {
         setRole(res.data.data);
       })
@@ -67,7 +67,7 @@ export const AddRole = () => {
     );
 
     await axios
-      .post(`https://api.rapot.techbatchtech.my.id/api/${slug}/update-role`, formData)
+      .post(`https://rapot.api.techbatchtech.my.id/api/${slug}/update-role`, formData)
       .then(() => {
         setIsSended(!isSended);
       })

@@ -20,7 +20,7 @@ export const Profile = () => {
 
     await axios
       .post(
-        `https://api.rapot.techbatchtech.my.id/api/${user.slug}/update-signature`,
+        `https://rapot.api.techbatchtech.my.id/api/${user.slug}/update-signature`,
         formData,
         {
           headers: {
@@ -75,11 +75,14 @@ export const Profile = () => {
             <h1 className="text-center font-bold text-lg">
               Tanda Tangan Antum (untuk rapot santri)
             </h1>
-            {user.roles?.some((role) => role.nama_role === "Wali Kelas" || role.nama_role === "Kepala Sekolah") ===
-            true ? (
+            {user.roles?.some(
+              (role) =>
+                role.nama_role === "Wali Kelas" ||
+                role.nama_role === "Kepala Sekolah"
+            ) === true ? (
               <div className="flex flex-col">
                 <img
-                  src={`https://api.rapot.techbatchtech.my.id/storage/tanda-tangan/${user.tanda_tangan}`}
+                  src={`https://rapot.api.techbatchtech.my.id/storage/tanda-tangan/${user.tanda_tangan}`}
                   alt="tanda tangan"
                   width={200}
                   height={200}
@@ -92,7 +95,12 @@ export const Profile = () => {
                     onChange={handleImageChange}
                     name="signatureUp"
                   />
-                  <button className="p-2 mt-3 rounded bg-[#9e0000] text-white text-center hover:bg-[#852323]" type="submit">Upload</button>
+                  <button
+                    className="p-2 mt-3 rounded bg-[#9e0000] text-white text-center hover:bg-[#852323]"
+                    type="submit"
+                  >
+                    Upload
+                  </button>
                 </form>
               </div>
             ) : (

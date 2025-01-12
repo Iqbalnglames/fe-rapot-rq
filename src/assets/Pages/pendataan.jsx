@@ -11,31 +11,45 @@ export const Pendataan = () => {
   });
 
   const handleFetchMapelCategory = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/kategori-mapel").then((res) => {
-      const categoryLength = res.data.data.length;
-      setData((prevData) => ({ ...prevData, categoryLength: categoryLength }));
-    });
+    await axios
+      .get("https://rapot.api.techbatchtech.my.id/api/kategori-mapel")
+      .then((res) => {
+        const categoryLength = res.data.data.length;
+        setData((prevData) => ({
+          ...prevData,
+          categoryLength: categoryLength,
+        }));
+      });
   };
 
   const handleFetchRole = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/role").then((res) => {
-      const roleLength = res.data.data.length;
-      setData((prevData) => ({ ...prevData, roleLength: roleLength }));
-    });
+    await axios
+      .get("https://rapot.api.techbatchtech.my.id/api/role")
+      .then((res) => {
+        const roleLength = res.data.data.length;
+        setData((prevData) => ({ ...prevData, roleLength: roleLength }));
+      });
   };
 
   const handleFetchMapel = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/mapel").then((res) => {
-      const mapelLength = res.data.data.length;
-      setData((prevData) => ({ ...prevData, mapelLength: mapelLength }));
-    });
+    await axios
+      .get("https://rapot.api.techbatchtech.my.id/api/mapel")
+      .then((res) => {
+        const mapelLength = res.data.data.length;
+        setData((prevData) => ({ ...prevData, mapelLength: mapelLength }));
+      });
   };
 
   const handleFetchTajar = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/tahun-ajaran").then((res) => {
-      const tajarLength = res.data.data.length;
-      setData((prevData) => ({ ...prevData, tahunAjaranLength: tajarLength }));
-    });
+    await axios
+      .get("https://rapot.api.techbatchtech.my.id/api/tahun-ajaran")
+      .then((res) => {
+        const tajarLength = res.data.data.length;
+        setData((prevData) => ({
+          ...prevData,
+          tahunAjaranLength: tajarLength,
+        }));
+      });
   };
 
   useEffect(() => {

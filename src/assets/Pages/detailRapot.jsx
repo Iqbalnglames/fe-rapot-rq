@@ -28,10 +28,10 @@ export const DetailRapot = (props) => {
     try {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       const [userRes, kepsekRes, mapelRes, rapotRes] = await Promise.all([
-        axios.get("https://api.rapot.techbatchtech.my.id/api/user"),
-        axios.get("https://api.rapot.techbatchtech.my.id/api/show-kepsek"),
-        axios.get("https://api.rapot.techbatchtech.my.id/api/kategori-mapel"),
-        axios.get(`https://api.rapot.techbatchtech.my.id/api/rapot/${props.slugNama}`),
+        axios.get("https://rapot.api.techbatchtech.my.id/api/user"),
+        axios.get("https://rapot.api.techbatchtech.my.id/api/show-kepsek"),
+        axios.get("https://rapot.api.techbatchtech.my.id/api/kategori-mapel"),
+        axios.get(`https://rapot.api.techbatchtech.my.id/api/rapot/${props.slugNama}`),
       ]);
       setUser(userRes.data);
       setKepsek(kepsekRes.data.data);

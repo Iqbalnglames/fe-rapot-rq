@@ -16,13 +16,13 @@ export const AddMapelData = () => {
   });
 
   const handleFetchMapelCategory = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/kategori-mapel").then((res) => {
+    await axios.get("https://rapot.api.techbatchtech.my.id/api/kategori-mapel").then((res) => {
       setCategoryData(res.data.data);
     });
   };
 
   const handleFetchKelas = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/kelas").then((res) => {
+    await axios.get("https://rapot.api.techbatchtech.my.id/api/kelas").then((res) => {
       setKelasData(res.data.data);
     });
   };
@@ -44,7 +44,7 @@ export const AddMapelData = () => {
     formData.append("kelas_id", JSON.stringify(finalClassData));
 
     await axios
-      .post("https://api.rapot.techbatchtech.my.id/api/mapel", formData)
+      .post("https://rapot.api.techbatchtech.my.id/api/mapel", formData)
       .then(() => {
         setIsSended(true);
       })

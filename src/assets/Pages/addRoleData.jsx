@@ -15,7 +15,7 @@ export const AddRoleData = () => {
   const headData = ["No", "Nama Role"];
 
   const handleFetchRole = async () => {
-    await axios.get("https://api.rapot.techbatchtech.my.id/api/role").then((res) => {
+    await axios.get("https://rapot.api.techbatchtech.my.id/api/role").then((res) => {
       setRole(res.data.data);
     });
   };
@@ -40,7 +40,7 @@ export const AddRoleData = () => {
     formData.append("nama_role", titleCase(data.nama_role));
 
     await axios
-      .post("http://api.rapot.techbatchtech.my.id/api/role", formData)
+      .post("http://rapot.api.techbatchtech.my.id/api/role", formData)
       .then(() => {
         setIsSended(true);
       })
