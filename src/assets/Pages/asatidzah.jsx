@@ -43,7 +43,7 @@ export const Asatidzah = () => {
     formData.append("isActive", 1);
 
     await axios
-      .post(`http://127.0.0.1:8000/api/${id}/activate`, formData)
+      .post(`http://api.rapot.techbatchtech.my.id/api/${id}/activate`, formData)
       .then(() => {
         setIsActivate(true);
         setIsLoaded(false);

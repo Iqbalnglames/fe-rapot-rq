@@ -20,7 +20,7 @@ export const Profile = () => {
 
     await axios
       .post(
-        `http://127.0.0.1:8000/api/${user.slug}/update-signature`,
+        `http://api.rapot.techbatchtech.my.id/api/${user.slug}/update-signature`,
         formData,
         {
           headers: {
@@ -79,7 +79,7 @@ export const Profile = () => {
             true ? (
               <div className="flex flex-col">
                 <img
-                  src={`http://127.0.0.1:8000/storage/tanda-tangan/${user.tanda_tangan}`}
+                  src={`http://api.rapot.techbatchtech.my.id/storage/tanda-tangan/${user.tanda_tangan}`}
                   alt="tanda tangan"
                   width={200}
                   height={200}

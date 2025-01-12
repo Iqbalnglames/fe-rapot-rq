@@ -29,9 +29,9 @@ export const DetailRapot = (props) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       const [userRes, kepsekRes, mapelRes, rapotRes] = await Promise.all([
         axios.get("http://localhost:8000/api/user"),
-        axios.get("http://127.0.0.1:8000/api/show-kepsek"),
-        axios.get("http://127.0.0.1:8000/api/kategori-mapel"),
-        axios.get(`http://127.0.0.1:8000/api/rapot/${props.slugNama}`),
+        axios.get("http://api.rapot.techbatchtech.my.id/api/show-kepsek"),
+        axios.get("http://api.rapot.techbatchtech.my.id/api/kategori-mapel"),
+        axios.get(`http://api.rapot.techbatchtech.my.id/api/rapot/${props.slugNama}`),
       ]);
       setUser(userRes.data);
       setKepsek(kepsekRes.data.data);
@@ -377,7 +377,7 @@ export const DetailRapot = (props) => {
                     </h1>
                   </div>
                   <img
-                    src={`http://127.0.0.1:8000/api/tanda-tangan/${user.tanda_tangan}`}
+                    src={`http://api.rapot.techbatchtech.my.id/api/tanda-tangan/${user.tanda_tangan}`}
                     alt="tanda tangan"
                     width={200}
                     height={200}
@@ -395,7 +395,7 @@ export const DetailRapot = (props) => {
                     </h1>
                   </div>
                   <img
-                    src={`http://127.0.0.1:8000/api/tanda-tangan/${kepsek.tanda_tangan}`}
+                    src={`http://api.rapot.techbatchtech.my.id/api/tanda-tangan/${kepsek.tanda_tangan}`}
                     alt="tanda tangan"
                     width={200}
                     height={200}

@@ -25,7 +25,7 @@ export const ProfileEdit = () => {
 
   const fetchDetailData = async () => {
     await axios
-      .get(`http://127.0.0.1:8000/api/user/${slug}/edit`)
+      .get(`http://api.rapot.techbatchtech.my.id/api/user/${slug}/edit`)
       .then((res) => {
         setData({
           username: res.data.data.username,
@@ -48,7 +48,7 @@ export const ProfileEdit = () => {
     formData.append("new_password_confirmation", data.new_password_confirm);
 
     await axios
-      .post(`http://127.0.0.1:8000/api/${slug}/update`, formData)
+      .post(`http://api.rapot.techbatchtech.my.id/api/${slug}/update`, formData)
       .then(() => {
         setIsSended(true);
       })

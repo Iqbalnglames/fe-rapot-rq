@@ -47,13 +47,13 @@ export const Rapot = () => {
   const headData = ["No", "Nama", "Kelas", "Penilaian", "Aksi"];
 
   const fetchMapel = async () => {
-    await axios.get("http://127.0.0.1:8000/api/kategori-mapel").then((res) => {
+    await axios.get("https://api.rapot.techbatchtech.my.id/api/kategori-mapel").then((res) => {
       setMapel(res.data.data);
     });
   };
 
   const fetchTajar = async () => {
-    await axios.get("http://127.0.0.1:8000/api/tahun-ajaran").then((res) => {
+    await axios.get("https://api.rapot.techbatchtech.my.id/api/tahun-ajaran").then((res) => {
       setTajar(res.data.data);
     });
   };

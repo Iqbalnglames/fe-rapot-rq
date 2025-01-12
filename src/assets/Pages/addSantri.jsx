@@ -34,7 +34,7 @@ export const AddSantriData = () => {
     formData.append("nama_ortu", namaOrtu);
 
     await axios
-      .post("http://127.0.0.1:8000/api/santri/add", formData)
+      .post("http://api.rapot.techbatchtech.my.id/api/santri/add", formData)
       .then(() => {
         navigate("/santri");
       })
