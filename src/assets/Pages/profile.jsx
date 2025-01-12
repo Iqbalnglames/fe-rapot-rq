@@ -39,9 +39,9 @@ export const Profile = () => {
     });
   }, []);
   return (
-    <div className="flex space-x-2">
+    <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:space-x-2">
       <div className="space-y-4">
-        <div className="p-3 w-96 flex border-slate-200 border flex-col rounded drop-shadow-lg bg-white">
+        <div className="p-3 lg:w-96 flex border-slate-200 border flex-col rounded drop-shadow-lg bg-white">
           <img
             className="self-center"
             src={userPic}
@@ -70,7 +70,7 @@ export const Profile = () => {
             Ubah Data
           </Link>
         </div>
-        <div className="p-3 w-96 rounded h-[373px] border border-slate-200 drop-shadow-lg bg-white">
+        <div className="p-3 lg:w-96 rounded h-[373px] border border-slate-200 drop-shadow-lg bg-white">
           <div className="mt-2">
             <h1 className="text-center font-bold text-lg">
               Tanda Tangan Antum (untuk rapot santri)
@@ -92,7 +92,7 @@ export const Profile = () => {
                     onChange={handleImageChange}
                     name="signatureUp"
                   />
-                  <button type="submit">Upload</button>
+                  <button className="p-2 mt-3 rounded bg-[#9e0000] text-white text-center hover:bg-[#852323]" type="submit">Upload</button>
                 </form>
               </div>
             ) : (

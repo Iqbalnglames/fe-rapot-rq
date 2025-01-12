@@ -7,11 +7,12 @@ import { fetchUser } from "./utilities/fetchUser";
 
 function App() {
   const [isLogin, setIsLogin] = useState(false);
+  const [showSide, setShowSide] = useState(false);
 
   const token = localStorage.getItem("token");
   const fetchUserData = async () => {
     fetchUser().then((res) => {
-      localStorage.setItem("classUser", res.data.kelas?.id);
+      sessionStorage.setItem("classUser", res.data.kelas?.id);
     });
   };
   useEffect(() => {
@@ -30,10 +31,10 @@ function App() {
           </AuthProvider>
         </div>
       ) : (
-        <div className="flex z-0">
-          <Sidebar />
+        <div className="flex z-0 lg:h-auto h-screen overflow-scroll">
+          <Sidebar showSide={showSide} showSideFunc={() => setShowSide(!showSide)} />
           <div className="flex z-0 flex-col w-full">
-            <Navbar />
+            <Navbar showSide={() => setShowSide(!showSide)} />
             <div className="p-8 z-0">
               <Navigation />
             </div>

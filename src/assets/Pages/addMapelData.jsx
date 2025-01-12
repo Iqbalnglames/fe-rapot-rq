@@ -63,28 +63,24 @@ export const AddMapelData = () => {
   return (
     <div>
       {isSended === true ? (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={"data berhasil dikirimkan"}
-            pathA={"/pendataan"}
-            buttonA={"Kembali ke menu"}
-            pathB={() => setIsSended(false)}
-            buttonB={"tambah lagi"}
-          />
-        </div>
+        <Alert
+          icon={<TbChecklist />}
+          pesan={"data berhasil dikirimkan"}
+          pathA={"/pendataan"}
+          buttonA={"Kembali ke menu"}
+          pathB={() => setIsSended(false)}
+          buttonB={"tambah lagi"}
+        />
       ) : (
         ""
       )}
       {validation && (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={validation.nama_mapel[0]}
-            pathB={() => setValidation(!validation)}
-            buttonB={"tutup"}
-          />
-        </div>
+        <Alert
+          icon={<TbChecklist />}
+          pesan={validation.nama_mapel[0]}
+          pathB={() => setValidation(!validation)}
+          buttonB={"tutup"}
+        />
       )}
       <h1 className="text-center font-bold text-lg">
         Tambah mata pelajaran baru
@@ -93,13 +89,13 @@ export const AddMapelData = () => {
         <div className="grid grid-cols space-y-2 rounded border border-slate-200 drop-shadow-xl bg-white p-4 mt-4">
           <span>Nama Mapel</span>
           <input
-            className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2 "
+            className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2"
             type="text"
             placeholder="nama mata pelajaran"
             onChange={(e) => setData({ ...data, nama_mapel: e.target.value })}
           />
           <span>Pilih Kelas Mapel</span>
-          <div className="flex space-x-2 p-2 border border-slate-300 rounded h-32">
+          <div className="flex lg:space-x-2 space-y-4 lg:space-y-0 p-2 border flex-col lg:flex-row border-slate-300 rounded lg:h-32">
             {kelasId.length !== 0
               ? removeDuplicateClass.map((item, key) => {
                   return (
@@ -110,7 +106,7 @@ export const AddMapelData = () => {
                             removeDuplicateClass.filter((_, k) => k !== key)
                           )
                         }
-                        className="rounded-full border bg-white border-slate-300 p-2 hover:bg-slate-100 h-fit cursor-pointer"
+                        className="rounded-full w-fit border bg-white border-slate-300 p-2 hover:bg-slate-100 h-fit cursor-pointer"
                       >
                         <h1 className="inline text-slate-500">X</h1>{" "}
                         <h1 className="inline">{item.kelas}</h1>
@@ -121,7 +117,7 @@ export const AddMapelData = () => {
                 })
               : "belum ada kelas yang dipilih"}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex lg:space-x-2 space-y-4 lg:space-y-0 flex-col lg:flex-row">
             {kelasData.map((res) => {
               return (
                 <>
@@ -133,7 +129,7 @@ export const AddMapelData = () => {
                         setKelasId([...kelasId, res]);
                       }
                     }}
-                    className="rounded-full border border-slate-300 p-2 hover:bg-slate-100 h-fit cursor-pointer"
+                    className="rounded-full w-fit border border-slate-300 p-2 hover:bg-slate-100 h-fit cursor-pointer"
                   >
                     <h1 className="inline">{res.kelas}</h1>
                     <input type="hidden" value={res.id} />

@@ -38,7 +38,7 @@ export const Register = () => {
   };
 
   return (
-    <div className="border rounded border-slate-200 drop-shadow-lg p-4 z-10 bg-white absolute top-[18%] left-[40%] w-96">
+    <div className="border rounded border-slate-200 drop-shadow-lg p-4 z-10 bg-white absolute top-[18%] left-1 lg:left-[40%] w-96">
       <h1 className="text-center">
         <img
           className="inline mr-2"

@@ -52,34 +52,30 @@ export const AddRoleData = () => {
   return (
     <div>
       {isSended === true ? (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={"data role berhasil dikirimkan"}
-            pathA={"/pendataan"}
-            buttonA={"Kembali ke menu"}
-            pathB={() => setIsSended(false)}
-            buttonB={"tambah lagi"}
-          />
-        </div>
+        <Alert
+          icon={<TbChecklist />}
+          pesan={"data role berhasil dikirimkan"}
+          pathA={"/pendataan"}
+          buttonA={"Kembali ke menu"}
+          pathB={() => setIsSended(false)}
+          buttonB={"tambah lagi"}
+        />
       ) : (
         ""
       )}
       {validation
         ? validation && (
-            <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-              <Alert
-                icon={<TbChecklist />}
-                pesan={validation.nama_role[0]}
-                pathB={() => setValidation(!validation)}
-                buttonB={"tutup"}
-              />
-            </div>
+            <Alert
+              icon={<TbChecklist />}
+              pesan={validation.nama_role[0]}
+              pathB={() => setValidation(!validation)}
+              buttonB={"tutup"}
+            />
           )
         : null}
       <h1 className="text-center font-bold text-lg">Tambah data role baru</h1>
-      <div className="max-h-96 overflow-hidden overflow-y-auto">
-        <table className="w-1/2">
+      <div className="h-48 overflow-hidden overflow-y-scroll">
+        <table className="w-full">
           <thead className="top-0 sticky bg-gray-200 border-b">
             <tr>
               {headData.map((data, i) => {
@@ -102,8 +98,8 @@ export const AddRoleData = () => {
                   key={key}
                   className="bg-white hover:bg-[#f8efe5] border-b hover:text-[#9e0000] transition duration-300 ease-in-out"
                 >
-                  <td>{key + 1}</td>
-                  <td>{item.nama_role}</td>
+                  <td className="p-2">{key + 1}</td>
+                  <td className="p-2">{item.nama_role}</td>
                 </tr>
               );
             })}

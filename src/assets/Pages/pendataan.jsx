@@ -48,7 +48,7 @@ export const Pendataan = () => {
   return (
     <div>
       <h1 className="font-bold text-xl">Pendataan</h1>
-      <div className="flex space-x-2 mt-4">
+      <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 items-center lg:items-start lg:space-x-2 mt-4">
         <Card
           jumlah={data.mapelLength === "" ? "Loading..." : data.mapelLength}
           terhitung={"jumlah mapel"}

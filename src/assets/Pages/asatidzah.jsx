@@ -154,7 +154,10 @@ export const Asatidzah = () => {
                   <FaUserCheck />
                 )}
               </button>
-              <Link className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5] relative group">
+              <Link
+                to={`/edit-asatidzah/${ustadz.slug}`}
+                className="hover:bg-[#9e0000] p-2 border rounded-md max-w-fit text-center hover:text-[#f8efe5] relative group"
+              >
                 <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                   edit data ustadz
                 </div>

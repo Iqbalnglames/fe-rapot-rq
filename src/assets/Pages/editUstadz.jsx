@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { IoWarning } from "react-icons/io5";
 import { Alert } from "../../components/alert";
 import { TbChecklist } from "react-icons/tb";
 
-export const AddUstadzData = () => {
+export const EditUstadz = () => {
   const [data, setData] = useState({
     username: "",
     name: "",
@@ -13,11 +13,26 @@ export const AddUstadzData = () => {
     password: "",
     isActive: "",
   });
+  const { slug } = useParams();
   const [isSended, setIsSended] = useState(false);
   const [validation, setValidation] = useState([]);
   const [errors, setErrors] = useState(false);
 
-  useEffect(() => {}, []);
+  const handleFetchData = async () => {
+    await axios
+      .get(`http://127.0.0.1:8000/api/user/${slug}/edit`)
+      .then((res) => {
+        setData({
+          username: res.data.data.username,
+          name: res.data.data.name,
+          email: res.data.data.email,
+        });
+      });
+  };
+
+  useEffect(() => {
+    handleFetchData();
+  }, []);
 
   const handleSendData = async (e) => {
     e.preventDefault();
@@ -71,9 +86,7 @@ export const AddUstadzData = () => {
         </>
       ) : null}
       <div>
-        <h1 className="text-center font-bold text-lg">
-          Tambah data ustadz baru
-        </h1>
+        <h1 className="text-center font-bold text-lg">Edit data ustadz</h1>
         <form onSubmit={handleSendData} method="post">
           <div className="grid grid-cols space-y-2 rounded border border-slate-200 drop-shadow-xl bg-white p-4 mt-4">
             <span>Nama Lengkap Pegawai</span>
@@ -81,6 +94,7 @@ export const AddUstadzData = () => {
               className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2 "
               type="text"
               placeholder="nama ustadz"
+              value={data.name}
               onChange={(e) => setData({ ...data, name: e.target.value })}
             />
             {validation.name && (
@@ -93,6 +107,7 @@ export const AddUstadzData = () => {
               className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2 "
               type="text"
               placeholder="username"
+              value={data.username}
               onChange={(e) => setData({ ...data, username: e.target.value })}
             />
             {validation.username && (
@@ -104,6 +119,7 @@ export const AddUstadzData = () => {
             <input
               className="p-2 border-b border-[#9e0000] outline-none focus:bg-[#f8efe5] focus:border-b-2 "
               placeholder="email"
+              value={data.email}
               onChange={(e) => setData({ ...data, email: e.target.value })}
             />
             {validation.email && (
@@ -111,33 +127,6 @@ export const AddUstadzData = () => {
                 {validation.email[0]}
               </div>
             )}
-            <span>Password(default: guru123)</span>
-            <input
-              className="p-2 focus:border-b-2 border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
-              name="kelas"
-              id=""
-              type="password"
-              placeholder="******"
-              onChange={(e) => setData({ ...data, password: e.target.value })}
-            ></input>
-            {validation.password && (
-              <div className="my-2 p-2 bg-red-200 border border-red-600 text-red-600">
-                {validation.password[0]}
-              </div>
-            )}
-            <div>
-              <input
-                className="p-2 focus:border-b-2 border-b border-[#9e0000] outline-none bg-white focus:bg-[#f8efe5]"
-                name="kelas"
-                type="checkbox"
-                value={1}
-                id=""
-                onChange={(e) =>
-                  setData({ ...data, isActive: e.target.checked })
-                }
-              ></input>
-              <span> Aktifkan Akun?</span>
-            </div>
             <div className="flex space-x-2">
               <Link
                 to={"/asatidzah"}

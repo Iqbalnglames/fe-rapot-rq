@@ -69,27 +69,26 @@ export const AddRole = () => {
     await axios
       .post(`http://127.0.0.1:8000/api/${slug}/update-role`, formData)
       .then(() => {
-        setIsSended(true);
+        setIsSended(!isSended);
       })
       .catch((error) => {
         setErrors(true);
         setValidation(error.response.data);
       });
+    console.log(!isSended);
   };
 
   return (
     <>
-      {isSended ? (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={"role berhasil ditambahkan"}
-            pathA={"/asatidzah"}
-            buttonA={"Kembali ke List"}
-            pathB={() => setIsSended(!isSended)}
-            buttonB={"tambah lagi"}
-          />
-        </div>
+      {isSended === true ? (
+        <Alert
+          icon={<TbChecklist />}
+          pesan={"role berhasil ditambahkan"}
+          pathA={"/asatidzah"}
+          buttonA={"Kembali ke List"}
+          pathB={() => setIsSended(!isSended)}
+          buttonB={"tambah lagi"}
+        />
       ) : null}
       {errors ? (
         <>
@@ -123,7 +122,7 @@ export const AddRole = () => {
               disabled
             />
             <span>Pilih Role Anda</span>
-            <div className="flex space-x-2 p-2 border border-slate-300 rounded h-32">
+            <div className="flex lg:flex-row flex-col space-y-6 lg:space-y-0 lg:space-x-2 lg:p-2 p-4 border border-slate-300 rounded lg:h-32">
               {roleId.length !== 0
                 ? removedDuplicateRole.map((item, key) => {
                     return (
@@ -145,7 +144,7 @@ export const AddRole = () => {
                   })
                 : "belum ada role yang dipilih"}
             </div>
-            <div className="flex space-x-2">
+            <div className="flex lg:space-x-2 flex-col lg:flex-row space-y-4 lg:space-y-0">
               {role?.map((item, key) => {
                 return (
                   <Link
@@ -160,7 +159,7 @@ export const AddRole = () => {
                         setRoleId([...roleId, item]);
                       }
                     }}
-                    className="rounded-full border border-slate-300 p-2 hover:bg-slate-100 h-fit disabled:bg-slate-50"
+                    className="rounded-full w-fit border border-slate-300 p-2 hover:bg-slate-100 h-fit disabled:bg-slate-50"
                   >
                     <h1 className="inline">{item.nama_role}</h1>
                     <input type="hidden" value={item.id} />
@@ -187,11 +186,7 @@ export const AddRole = () => {
                   >
                     <option>-- pilih kelas --</option>
                     {kelas.map((kelas) => {
-                      return (
-                        <>
-                          <option value={kelas.id}>{kelas.kelas}</option>
-                        </>
-                      );
+                      return <option value={kelas.id}>{kelas.kelas}</option>;
                     })}
                   </select>
                 </>

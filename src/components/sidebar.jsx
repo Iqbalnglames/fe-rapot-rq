@@ -3,7 +3,7 @@ import { FaClipboardList } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { fetchUser } from "../utilities/fetchUser";
 
-export const Sidebar = () => {
+export const Sidebar = (props) => {
   const [user, setUser] = useState({});
   useEffect(() => {
     fetchUser().then((res) => {
@@ -11,8 +11,16 @@ export const Sidebar = () => {
     });
   }, []);
   return (
-    <div className="z-0">
-      <nav className="flex flex-col w-64 h-screen px-4 tex-gray-900 border border-gray-300">
+    <div
+      className={`${
+        props.showSide ? "z-50" : "z-0"
+      } flex h-screen absolute w-full lg:w-auto lg:static`}
+    >
+      <nav
+        className={`bg-white transition ease-in-out ${
+          props.showSide ? "translate-x-0" : "-translate-x-[400px]"
+        } lg:translate-x-0 flex flex-col w-2/3 lg:block lg:w-64 h-screen px-4 tex-gray-900 border border-gray-300`}
+      >
         <div className="flex mt-5 mx-3">
           <img
             className="inline"
@@ -159,6 +167,12 @@ export const Sidebar = () => {
           </ul>
         </div>
       </nav>
+      <div
+        className={` ${
+          props.showSide ? "block" : "hidden"
+        } lg:hidden w-1/3 bg-[#00000077]`}
+        onClick={props.showSideFunc}
+      ></div>
     </div>
   );
 };

@@ -69,16 +69,14 @@ export const AddMapelAjar = () => {
   return (
     <>
       {isSended ? (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={"mapel berhasil ditambahkan"}
-            pathA={"/asatidzah"}
-            buttonA={"Kembali ke List"}
-            pathB={() => setIsSended(!isSended)}
-            buttonB={"tambah lagi"}
-          />
-        </div>
+        <Alert
+          icon={<TbChecklist />}
+          pesan={"mapel berhasil ditambahkan"}
+          pathA={"/asatidzah"}
+          buttonA={"Kembali ke List"}
+          pathB={() => setIsSended(!isSended)}
+          buttonB={"tambah lagi"}
+        />
       ) : null}
       {errors ? (
         <>
@@ -112,7 +110,7 @@ export const AddMapelAjar = () => {
               disabled
             />
             <span>Pilih Mapel Anda</span>
-            <div className="flex space-x-2 p-2 border border-slate-300 rounded h-32">
+            <div className="flex lg:space-x-2 space-y-4 lg:space-y-0 flex-col overflow-scroll w-full lg:flex-row p-2 py-4 border border-slate-300 rounded lg:h-32">
               {mapelId.length !== 0
                 ? removedDuplicateMapel.map((item, key) => {
                     return (
@@ -134,7 +132,7 @@ export const AddMapelAjar = () => {
                   })
                 : "belum ada mapel yang dipilih"}
             </div>
-            <div className="flex space-x-2">
+            <div className="flex lg:space-x-2 space-y-4 lg:space-y-0 flex-col lg:flex-row">
               {mapel?.map((item, key) => {
                 return (
                   <Link

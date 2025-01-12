@@ -1,13 +1,18 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchRapot } from "./../../utilities/fetchRapotAll";
 import { FaPen, FaPrint } from "react-icons/fa";
 import { MdFilterAltOff } from "react-icons/md";
-import { Alert } from "../../components/alert";
 import { LuFileSpreadsheet } from "react-icons/lu";
-import { useTextContent } from "../../utilities/useTextContent";
 import { fetchUser } from "../../utilities/fetchUser";
+import { DetailRapot } from "./detailRapot";
+import { Print } from "../../components/print";
+import { useReactToPrint } from "react-to-print";
+// import printJS from "print-js";
+// import { jsPDF } from "jspdf";
+// import domtoimage from "dom-to-image";
+// import htmlToPdfmake from "html-to-pdfmake";
 
 export const Rapot = () => {
   const [mapel, setMapel] = useState([]);
@@ -23,21 +28,22 @@ export const Rapot = () => {
     sessionStorage.getItem("choosedMapel") || ""
   );
   const [tajarPilihan, setTajarPilihan] = useState(
-    "" || sessionStorage.getItem("tahunAjaran")
+    sessionStorage.getItem("tahunAjaran") || ""
   );
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isPrintend, setIsPrinted] = useState(false);
   const [isAlerted, setIsAlerted] = useState(false);
   const [slugNama, setSlugNama] = useState("");
   const [user, setUser] = useState({});
-  const [choosedKelas, setChoosedKelas] = useState(
-    localStorage.getItem("classUser") || ""
+  const [showDetail, setShowDetail] = useState(false);
+  const [ujian, setUjian] = useState("");
+  const [choosedClass, setChoosedKelas] = useState(
+    sessionStorage.getItem("choosedClass") || ""
   );
-  // const ref = useTextContent(null);
   const [tajarText, setTajarText] = useState(
     "" || sessionStorage.getItem("tajarText")
   );
-
   const headData = ["No", "Nama", "Kelas", "Penilaian", "Aksi"];
 
   const fetchMapel = async () => {
@@ -55,7 +61,7 @@ export const Rapot = () => {
   const savedCategoryId = sessionStorage.getItem("choosedCategory");
 
   const loadingItems = [];
-  for (let i = 0; i < headData.length; i++) {
+  for (const head of headData) {
     loadingItems.push(
       <td className="px-6 py-4 font-light whitespace-nowrap">
         <div className="bg-gray-300 rounded-lg w-40 h-2 animate-pulse"></div>
@@ -82,6 +88,17 @@ export const Rapot = () => {
     setMapelPilihan("");
   };
 
+  const handleShowRapotUts = () => {
+    setUjian("UTS");
+    setShowDetail(!showDetail);
+    setIsAlerted(!isAlerted);
+  };
+  const handleShowRapotUas = () => {
+    setUjian("UAS");
+    setShowDetail(!showDetail);
+    setIsAlerted(!isAlerted);
+  };
+
   const handleTajarChange = (event) => {
     setTajarPilihan(event.target.value);
     setTajarText(
@@ -97,6 +114,7 @@ export const Rapot = () => {
 
   const resetFilter = () => {
     setChoosedCategory("");
+    setChoosedKelas("");
     setMapelPilihan("");
     setSemester("");
     setTajarPilihan("");
@@ -104,6 +122,7 @@ export const Rapot = () => {
     sessionStorage.setItem("choosedCategory", "");
     sessionStorage.setItem("semester", "");
     sessionStorage.setItem("tahunAjaran", "");
+    sessionStorage.setItem("choosedClass", "");
   };
 
   const handleMapelChange = (event) => {
@@ -115,6 +134,21 @@ export const Rapot = () => {
     setSemester(event.target.value);
     sessionStorage.setItem("semester", event.target.value);
   };
+
+  const handleChangeKelas = (event) => {
+    setChoosedKelas(event.target.value);
+    if (sessionStorage.getItem("classUser") === "") {
+      sessionStorage.setItem(
+        "choosedClass",
+        sessionStorage.getItem("classUser")
+      );
+    } else {
+      sessionStorage.setItem("choosedClass", event.target.value);
+    }
+  };
+
+  const contentRef = useRef();
+  const printElement = useReactToPrint({ contentRef });
 
   const escKey = (event) => {
     if (event.key === "Escape" && isAlerted === true) {
@@ -136,47 +170,91 @@ export const Rapot = () => {
     (value, index, self) => index === self.findIndex((t) => t.id === value.id)
   );
 
+  const sortedMergedKelas = mergeredKelas.sort((a, b) => a.id - b.id);
+
   useEffect(() => {
     fetchUser().then((res) => {
       setUser(res.data);
     });
-    fetchRapotData(choosedKelas);
+    fetchRapotData(choosedClass);
 
     if (savedCategoryId) {
       setChoosedCategory(savedCategoryId);
     }
     fetchMapel();
     fetchTajar();
-  }, [choosedKelas]);
+  }, [choosedClass]);
 
   useEffect(() => {
     sessionStorage.setItem("choosedCategory", choosedCategory);
   }, [choosedCategory]);
 
+  console.log(dataSantri);
+
   return (
     <>
-      <Alert
+      <Print
         icon={<LuFileSpreadsheet />}
         display={isAlerted ? "absolute" : "hidden"}
         pesan="Pilih rapot yang akan dicetak"
-        pathA={`/detail-rapot/${slugNama}/${tajarText}/semester-${semester}/UTS`}
-        pathB={`/detail-rapot/${slugNama}/${tajarText}/semester-${semester}/UAS`}
+        pathA={handleShowRapotUts}
+        pathB={handleShowRapotUas}
         buttonA="Rapot UTS"
         buttonB="Rapot UAS"
       />
+      {showDetail ? (
+        <div
+          className={`transition-all duration-300 ease-in-out ${
+            showDetail ? "opacity-100 visible" : "opacity-0 invisible"
+          }  bg-white w-[222mm] border border-gray-400 drop-shadow-lg rounded-lg absolute top-5 bottom-5 z-50 left-[30%] right-5`}
+        >
+          <div className="w-fit h-[95%] overflow-scroll p-5">
+            <DetailRapot
+              slugNama={slugNama}
+              ujian={ujian}
+              tajarText={tajarText}
+              semester={semester}
+              printRef={contentRef}
+            />
+          </div>
+          <div className="flex w-full justify-center space-x-2">
+            <button
+              onClick={() => printElement()}
+              className="bg-[#9e0000] p-2 rounded text-center text-white hover:bg-[#852323]"
+            >
+              {isPrintend === false ? (
+                "Cetak"
+              ) : (
+                <>
+                  <svg className="loader inline" viewBox="25 25 50 50">
+                    <circle r="20" cy="50" cx="50"></circle>
+                  </svg>
+                  Loading...
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setShowDetail(!showDetail)}
+              className="text-[#9e0000] border border-[#9e0000] hover:bg-[#9e0000] hover:text-white p-2 rounded text-center"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      ) : null}
       <h1 className="text-center font-bold">List Nilai Santri</h1>
-      <div className="flex justify-end">
+      <div className="lg:flex lg:justify-end">
         <div className="flex flex-col">
           <>
             <span>Pilih Kelas</span>
             <select
               name="tajar"
-              value={choosedKelas}
-              onChange={(e) => setChoosedKelas(e.target.value)}
+              value={choosedClass}
+              onChange={(event) => handleChangeKelas(event)}
               className="bg-white border p-2 rounded "
             >
               <option value="">-- Pilih Kelas --</option>
-              {mergeredKelas.map((item) => {
+              {sortedMergedKelas.map((item) => {
                 return (
                   <>
                     <option value={item.id}>{item.kelas}</option>
@@ -187,7 +265,7 @@ export const Rapot = () => {
           </>
         </div>
 
-        <div className="ml-4 flex flex-col">
+        <div className="lg:ml-4 flex flex-col">
           <>
             <span>Pilih Tahun Ajaran</span>
             <select
@@ -208,7 +286,7 @@ export const Rapot = () => {
           </>
         </div>
         {tajarPilihan !== "" ? (
-          <div className="ml-4 flex flex-col">
+          <div className="lg:ml-4 flex flex-col">
             <>
               <span>Pilih Semester</span>
               <select
@@ -225,7 +303,7 @@ export const Rapot = () => {
           </div>
         ) : null}
         {semester !== "" ? (
-          <div className="ml-4 flex flex-col">
+          <div className="lg:ml-4 flex flex-col">
             <span>Kategori Mapel</span>
             <select
               name="category"
@@ -236,91 +314,102 @@ export const Rapot = () => {
               <option value="">-- Kategori Mapel --</option>
               {mapel.map((category) => {
                 return (
-                  <>
-                    <option value={category.id}>
-                      {category.kategori_mapel}
-                    </option>
-                  </>
+                  <option value={category.id}>{category.kategori_mapel}</option>
                 );
               })}
             </select>
           </div>
         ) : null}
         {choosedCategory && semester !== "" ? (
-          <div className="ml-4 flex flex-col">
-            <>
-              <span>Pilih Mapel</span>
-              <select
-                name="mapel"
-                value={mapelPilihan}
-                onChange={handleMapelChange}
-                className="bg-white border p-2 rounded "
-              >
-                <option value="">-- Semua Mapel --</option>
-                {user.roles?.some(
-                  (role) =>
-                    role.nama_role === "Admin" ||
-                    role.nama_role === "Wali Kelas"
-                ) === false
-                  ? user.mapels
-                      .filter(
-                        (mapel) => mapel.kategori_mapel_id == choosedCategory
-                      )
-                      .flatMap((mapel) => {
-                        return (
-                          <option key={mapel.id} value={mapel.nama_mapel}>
-                            {mapel.nama_mapel}
-                          </option>
-                        );
-                      })
-                  : mapel
-                      ?.filter((category) => category.id == choosedCategory)
-                      .flatMap((category) => category.mapel)
-                      .map((mapel) => {
-                        return (
-                          <option key={mapel.id} value={mapel.nama_mapel}>
-                            {mapel.nama_mapel}
-                          </option>
-                        );
-                      })}
-              </select>
-            </>
+          <div className="lg:ml-4 flex flex-col">
+            <span>Pilih Mapel</span>
+            <select
+              name="mapel"
+              value={mapelPilihan}
+              onChange={handleMapelChange}
+              className="bg-white border p-2 rounded "
+            >
+              <option value="">-- Semua Mapel --</option>
+              {user.roles?.some(
+                (role) =>
+                  role.nama_role === "Admin" || role.nama_role === "Wali Kelas"
+              ) === false
+                ? user.mapels
+                    .filter(
+                      (mapel) => mapel.kategori_mapel_id == choosedCategory
+                    )
+                    .flatMap((mapel) => {
+                      return (
+                        <option key={mapel.id} value={mapel.nama_mapel}>
+                          {mapel.nama_mapel}
+                        </option>
+                      );
+                    })
+                : mapel
+                    ?.filter((category) => category.id == choosedCategory)
+                    .flatMap((category) => category.mapel)
+                    .map((mapel) => {
+                      return (
+                        <option key={mapel.id} value={mapel.nama_mapel}>
+                          {mapel.nama_mapel}
+                        </option>
+                      );
+                    })}
+            </select>
           </div>
         ) : null}
 
         <button
-          className="border mt-[24.5px] rounded h-fit p-[6.3px] ml-4"
+          className="border mt-4 lg:mt-[24.5px] rounded h-fit p-[6.3px] lg:ml-4"
           onClick={resetFilter}
         >
           <MdFilterAltOff className="inline" /> Reset Filter
         </button>
       </div>
-      <div>
-        <table className="mt-2 min-w-full">
+      <div className="mt-2 max-h-[75vh] min-h-96 overflow-scroll overflow-y-auto">
+        <table className="min-w-full">
           <thead className="top-0 sticky bg-gray-200 border-b h-16">
             <tr>
               {headData.map((data, i) => {
-                return <th key={i}>{data}</th>;
+                return (
+                  <th className="min-w-20" key={i}>
+                    {data}
+                  </th>
+                );
               })}
             </tr>
           </thead>
           {isLoading
             ? loadingItems
-            : dataSantri?.map((data, index) => {
+            : dataSantri?.map((data, i) => {
                 return (
-                  <tbody key={index} className="text-center">
+                  <tbody key={i} className="text-center">
                     <tr className="bg-white hover:bg-[#f8efe5] border-b hover:text-[#9e0000] transition duration-300 ease-in-out">
-                      <td className="py-4 px-2"> {index + 1}</td>
-                      <td className="text-left"> {data.nama}</td>
+                      <td className="py-4 px-2"> {i + 1}</td>
+                      <td className="text-left px-2"> {data.nama}</td>
                       <td> {data.kelas.kelas}</td>
-                      <td className="items-center w-1/3">
+                      <td className="w-fit align-middle">
                         <tr className="">
-                          <th className="px-4">Mapel</th>
-                          <th className="px-4">tugas 1</th>
-                          <th className="px-4">tugas 2</th>
-                          <th className="px-4">tugas 3</th>
-                          <th className="px-4">UTS</th>
-                          <th className="px-4">UAS</th>
+                          <th className="border border-slate-200 px-4">
+                            Mapel
+                          </th>
+                          <th className="border border-slate-200 px-4">
+                            tugas 1
+                          </th>
+                          <th className="border border-slate-200 px-4">
+                            tugas 2
+                          </th>
+                          <th className="border border-slate-200 px-4">
+                            tugas 3
+                          </th>
+                          <th className="border border-slate-200 px-4">UTS</th>
+                          <th className="border border-slate-200 px-4">UAS</th>
+                          <th className="border border-slate-200 px-4">
+                            Total
+                          </th>
+                          <th className="border border-slate-200 px-4">
+                            Remedial
+                          </th>
                         </tr>
                         {data.nilai
                           ?.filter((res) =>
@@ -350,12 +439,42 @@ export const Rapot = () => {
                           .map((res, i) => {
                             return (
                               <tr key={i}>
-                                <td>{res.mapel.nama_mapel}</td>
-                                <td>{res.tugas_1}</td>
-                                <td>{res.tugas_2}</td>
-                                <td>{res.tugas_3}</td>
-                                <td>{res.UTS}</td>
-                                <td>{res.UAS}</td>
+                                <td className="border border-slate-200 text-left">
+                                  {res.mapel.nama_mapel}
+                                </td>
+                                <td className="border border-slate-200">
+                                  {res.tugas_1}
+                                </td>
+                                <td className="border border-slate-200">
+                                  {res.tugas_2}
+                                </td>
+                                <td className="border border-slate-200">
+                                  {res.tugas_3}
+                                </td>
+                                <td
+                                  className={`border border-slate-200 ${
+                                    res.UTS < data.kelas?.kkm
+                                      ? "text-red-500"
+                                      : ""
+                                  }`}
+                                >
+                                  {res.UTS}
+                                </td>
+                                <td className="border border-slate-200">
+                                  {res.UAS}
+                                </td>
+                                <td
+                                  className={`border border-slate-200 ${
+                                    res.UTS < data.kelas?.kkm
+                                      ? "text-red-500"
+                                      : ""
+                                  }`}
+                                >
+                                  {res.total}
+                                </td>
+                                <td className="border border-slate-200">
+                                  {res.isRemed == 1 ? "Ya" : "Tidak"}
+                                </td>
                               </tr>
                             );
                           })}
@@ -377,7 +496,7 @@ export const Rapot = () => {
                             role.nama_role === "admin" ||
                             role.nama_role === "Wali Kelas"
                         ) === true ? (
-                          <button
+                          <Link
                             onClick={() => {
                               handleShowAlert(data.slug);
                             }}
@@ -388,7 +507,7 @@ export const Rapot = () => {
                             <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
                               cetak rapot
                             </div>
-                          </button>
+                          </Link>
                         ) : null}
                       </td>
                     </tr>

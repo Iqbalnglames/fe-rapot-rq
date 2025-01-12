@@ -17,6 +17,7 @@ import { AddTajarData } from "../assets/Pages/addTajar";
 import { AddKategoriMapel } from "../assets/Pages/addKategoriMapel";
 import { Profile } from "../assets/Pages/profile";
 import { ProfileEdit } from "../assets/Pages/changeProfileData";
+import { EditUstadz } from "../assets/Pages/editUstadz";
 
 export const Navigation = () => {
   return (
@@ -34,6 +35,7 @@ export const Navigation = () => {
         element={<AddKategoriMapel />}
       />
       <Route path="/asatidzah" element={<Asatidzah />} />
+      <Route path="/edit-asatidzah/:slug" element={<EditUstadz />} />
       <Route path="/santri" element={<Santri />} />
       <Route path="/kelas" element={<Kelas />} />
       <Route path="/tambah-santri" element={<AddSantriData />} />

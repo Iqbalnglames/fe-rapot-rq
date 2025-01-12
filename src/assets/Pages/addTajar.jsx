@@ -30,16 +30,14 @@ export const AddTajarData = () => {
   return (
     <div>
       {isSended === true ? (
-        <div className="w-80 space-y-3 p-4 grid grid-cols place-items-center fixed z-20  top-[35%] left-[45%] transition ease-in-out delay-150">
-          <Alert
-            icon={<TbChecklist />}
-            pesan={"data tahun ajaran berhasil dikirimkan"}
-            pathA={"/pendataan"}
-            buttonA={"Kembali ke menu"}
-            pathB={() => setIsSended(false)}
-            buttonB={"tambah lagi"}
-          />
-        </div>
+        <Alert
+          icon={<TbChecklist />}
+          pesan={"data tahun ajaran berhasil dikirimkan"}
+          pathA={"/pendataan"}
+          buttonA={"Kembali ke menu"}
+          pathB={() => setIsSended(false)}
+          buttonB={"tambah lagi"}
+        />
       ) : (
         ""
       )}

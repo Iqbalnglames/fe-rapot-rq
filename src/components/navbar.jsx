@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import userPic from "../assets/user.png";
 
-const Navbar = () => {
+const Navbar = (props) => {
   const [open, setOpen] = useState(false);
 
   const [user, setUser] = useState({});
@@ -31,9 +32,17 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className={`w-full h-20 items-center dark:bg-dark z-20`}>
+    <header className={`w-full h-20 items-center dark:bg-dark`}>
       <div className="border border-x-0 border-gray-300 mx-2">
-        <div className=" flex justify-end">
+        <div className="flex justify-end">
+          <button
+            onClick={props.showSide}
+            className="hover:bg-slate-200 block lg:hidden space-y-1.5 rounded border self-center border-slate-600 h-fit p-1"
+          >
+            <div className="w-8 h-1 bg-slate-600"></div>
+            <div className="w-8 h-1 bg-slate-600"></div>
+            <div className="w-8 h-1 bg-slate-600"></div>
+          </button>
           <div className="flex w-full items-center py-5 justify-between px-6">
             <div></div>
             <div className="flex">
@@ -51,7 +60,7 @@ const Navbar = () => {
               </Link>
               <div className="">
                 {open ? (
-                  <div className="rounded p-2 bg-white drop-shadow-xl w-[315px] top-20 border border-slate-200 flex flex-col absolute">
+                  <div className="rounded p-2 bg-white drop-shadow-xl w-[315px] top-20 border border-slate-200 flex flex-col absolute z-50">
                     <Link
                       onClick={() => setOpen(!open)}
                       to={"profile"}
@@ -75,11 +84,11 @@ const Navbar = () => {
                 >
                   <div className="flex lg:hover:bg-[#f8efe5] hover:rounded p-2 space-x-2 ml-2">
                     <img
-                      src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
+                      src={userPic}
                       className="block lg:hidden mx-auto w-10 h-10 rounded-full border-2 p-[2px] border-white hover:border-gray-300"
                     />
                     <img
-                      src="https://ezio.sakurani.my.id/Scr_Hvvff_154930.png"
+                      src={userPic}
                       className="hidden lg:block mx-auto w-8 h-8 rounded-full"
                     />
                     <h1 className="hidden lg:block pt-1">

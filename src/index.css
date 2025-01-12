@@ -1,4 +1,9 @@
 @tailwind base;
+@layer base {
+  #rapot {
+    @apply inline-block;
+  }
+}
 @tailwind components;
 @tailwind utilities;
 
@@ -22,14 +27,14 @@
   @apply w-full;
 }
 
-/* From Uiverse.io by barisdogansutcu */ 
+/* From Uiverse.io by barisdogansutcu */
 .loader {
   width: 24px;
   transform-origin: center;
   animation: rotate4 2s linear infinite;
- }
- 
- circle {
+}
+
+circle {
   fill: none;
   stroke: white;
   stroke-width: 2;
@@ -37,27 +42,65 @@
   stroke-dashoffset: 0;
   stroke-linecap: round;
   animation: dash4 1.5s ease-in-out infinite;
- }
- 
- @keyframes rotate4 {
+}
+
+@keyframes rotate4 {
   100% {
-   transform: rotate(360deg);
+    transform: rotate(360deg);
   }
- }
- 
- @keyframes dash4 {
+}
+
+@keyframes dash4 {
   0% {
-   stroke-dasharray: 1, 200;
-   stroke-dashoffset: 0;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
   }
- 
+
   50% {
-   stroke-dasharray: 90, 200;
-   stroke-dashoffset: -35px;
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
   }
- 
+
   100% {
-   stroke-dashoffset: -125px;
+    stroke-dashoffset: -125px;
   }
- }
- 
+}
+
+.container-rapot {
+  width: 21cm;
+  height: 29.7cm;
+  border: 2px solid black;
+  padding: 5mm;
+}
+
+.header-rapot {
+  display: flex;
+  justify-content: center;
+  border-bottom: solid black 2px;
+}
+
+
+.header-rapot > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem /* 8px */ * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem /* 8px */ * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.nama-instansi {
+  font-weight: 700;
+  text-align: center;
+}
+
+.alamat-rapot {
+  font-weight: 300;
+}
+
+@layer base {img{display: initial;}}
+#rapot {
+  letter-spacing: 0.2px !important;
+  line-height: initial !important;
+}
+
+/* body > div:last-child > span + img {
+  display: inline !important;
+} */
