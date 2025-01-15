@@ -42,7 +42,6 @@ export const AddSantriData = () => {
         setErrors(true);
         setValidation(error.response.data);
       });
-    console.log(validation);
   };
 
   return (

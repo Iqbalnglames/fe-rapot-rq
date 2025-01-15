@@ -43,7 +43,10 @@ export const Asatidzah = () => {
     formData.append("isActive", 1);
 
     await axios
-      .post(`https://rapot.api.techbatchtech.my.id/api/${id}/activate`, formData)
+      .post(
+        `https://rapot.api.techbatchtech.my.id/api/${id}/activate`,
+        formData
+      )
       .then(() => {
         setIsActivate(true);
         setIsLoaded(false);
@@ -129,15 +132,15 @@ export const Asatidzah = () => {
             <div className="flex flex-row justify-center space-x-2">
               <button
                 onClick={() => handleActivateAccount(ustadz.id)}
-                disabled={ustadz.isActive === 0 ? false : true}
+                disabled={ustadz.isActive == 0 ? false : true}
                 className={`${
-                  ustadz.isActive === 0
+                  ustadz.isActive == 0
                     ? "hover:bg-[#9e0000] hover:text-[#f8efe5] "
                     : "text-gray-300"
                 } p-2 border rounded-md max-w-fit text-center relative group`}
               >
                 <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
-                  {ustadz.isActive === 0
+                  {ustadz.isActive == 0
                     ? "aktifkan akun"
                     : "akun sudah diaktifkan"}
                 </div>
